@@ -1,0 +1,84 @@
+﻿@model IEnumerable<VeterinariaWebApp.Models.Pago.Pago>
+
+@{
+    ViewData["Title"] = "Pagos de Clientes";
+    Layout = "~/Views/Shared/_LayoutRecepcionista.cshtml";
+}
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>@TempData["Mensaje"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<h1>Pagos de Clientes</h1>
+<hr>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Pagos Registrados</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>@Html.DisplayNameFor(model => model.IdPago)</th>
+                        <th>@Html.DisplayNameFor(model => model.HoraPago)</th>
+                        <th>@Html.DisplayNameFor(model => model.MontoPago)</th>
+                        <th>@Html.DisplayNameFor(model => model.TipoPago)</th>
+                        <th>@Html.DisplayNameFor(model => model.NombreCliente)</th>
+                        <th>@Html.DisplayNameFor(model => model.CorreoCliente)</th>
+                        <th>Autorización</th>
+                        <th>ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.IdPago)</td>
+                            <td>@Html.DisplayFor(modelItem => item.HoraPago)</td>
+                            <td>@Html.DisplayFor(modelItem => item.MontoPago)</td>
+                            <td>@Html.DisplayFor(modelItem => item.TipoPago)</td>
+                            <td>@Html.DisplayFor(modelItem => item.NombreCliente)</td>
+                            <td>@Html.DisplayFor(modelItem => item.CorreoCliente)</td>
+                            <td>
+                                @if (item.AutPag == true)
+                                {
+                                    <span class="badge bg-success"><i class="fas fa-check me-1"></i>Autorizado</span>
+                                }
+                                else if (item.AutPag == null)
+                                {
+                                    <span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i>Pendiente</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Desconocido</span>
+                                }
+                            </td>
+                            <td>
+                                <a class="btn btn-info btn-sm me-2"
+                                   href="@Url.Action("DetallePago", "Pago", new { id = item.IdPago, origen = "PagosRecepcionista" })">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                @if (item.AutPag == null)
+                                {
+                                    <form asp-action="ConfirmarPago" method="post" style="display:inline"
+                                          onsubmit="return confirm('¿Confirmar pago N° @item.IdPago de @item.NombreCliente?');">
+                                        <input type="hidden" name="id" value="@item.IdPago" />
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            <i class="fas fa-check me-1"></i> Confirmar
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,185 @@
+@model VeterinariaWebApp.Models.Usuario.Veterinario.AtencionCitaViewModel
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+
+@{
+    ViewData["Title"] = "Atender Cita";
+    Layout = "~/Views/Shared/_LayoutVeterinario.cshtml";
+    var csrfToken = Xsrf.GetAndStoreTokens(Context).RequestToken;
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-stethoscope me-2" style="color: #7695B5;"></i> Atención Médica
+        </h1>
+        <span class="badge fs-5 py-2 px-3" style="background: rgba(118, 149, 181, 0.15); color: #7695B5;">
+            <i class="fas fa-stethoscope me-2"></i>En Atención
+        </span>
+    </div>
+
+    <div class="row">
+        <!-- Panel izquierdo -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow mb-4" style="border-color: #7695B5;">
+                <div class="card-header py-3" style="background: linear-gradient(135deg, #7695B5, #76A7B7); color: #FFFFFF;">
+                    <h6 class="m-0 font-weight-bold text-white"><i class="fas fa-paw me-2"></i>Datos del Paciente</h6>
+                </div>
+                <div class="card-body text-center">
+                    <span style="font-size: 5rem;">@Model.EspecieEmoji</span>
+                    <h4 class="fw-bold mt-2" style="color: #7695B5;">@Model.NombreMascota</h4>
+                    <p class="text-muted">@Model.Especie</p>
+                    <hr>
+                    <div class="text-start">
+                        <p><i class="fas fa-user me-2"></i><strong>Dueño:</strong> @Model.NombreDueno</p>
+                        <p><i class="fas fa-id-card me-2"></i><strong>Doc:</strong> @Model.DocumentoDueno</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow mb-4">
+                <div class="card-header py-3" style="background: #584D53; color: #FFFFFF;">
+                    <h6 class="m-0 font-weight-bold text-white"><i class="fas fa-calendar-check me-2"></i>Datos de la Cita</h6>
+                </div>
+                <div class="card-body">
+                    <p><i class="fas fa-hashtag me-2"></i><strong>Cita #:</strong> @Model.IdCita</p>
+                    <p><i class="fas fa-calendar me-2"></i><strong>Fecha:</strong> @Model.FechaCita.ToString("dd/MM/yyyy")</p>
+                    <p><i class="fas fa-clock me-2"></i><strong>Hora:</strong> @Model.FechaCita.ToString("hh:mm tt")</p>
+                    <p><i class="fas fa-door-open me-2"></i><strong>Consultorio:</strong> @Model.Consultorio</p>
+                    <hr>
+                    <p>
+                        <i class="fas fa-money-bill-wave me-2" style="color: #706D60;"></i><strong>Monto:</strong>
+                        <span class="badge" style="background: rgba(112, 109, 96, 0.15); color: #575252;">S/ @Model.MontoPago.ToString("N2")</span>
+                    </p>
+                    <p><i class="fas fa-credit-card me-2"></i><strong>Método:</strong> @Model.MetodoPago</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Panel derecho -->
+        <div class="col-lg-8">
+            <div class="card shadow" style="border-color: #706D60;">
+                <div class="card-header py-3" style="background: linear-gradient(135deg, #706D60, #575252); color: #FFFFFF;">
+                    <h6 class="m-0 font-weight-bold text-white"><i class="fas fa-notes-medical me-2"></i>Registro de Atención</h6>
+                </div>
+                <div class="card-body">
+                    <form action="@Url.Action("FinalizarAtencion", "Veterinario")" method="post" id="formAtencion">
+                        @Html.AntiForgeryToken()
+
+                        <!-- Campos hidden con valores explícitos -->
+                        <input type="hidden" name="IdCita" value="@Model.IdCita" />
+                        <input type="hidden" name="NombreMascota" value="@Model.NombreMascota" />
+                        <input type="hidden" name="Especie" value="@Model.Especie" />
+                        <input type="hidden" name="EstadoCita" value="@Model.EstadoCita" />
+                        <input type="hidden" name="FechaCita" value="@Model.FechaCita.ToString("yyyy-MM-ddTHH:mm:ss")" />
+                        <input type="hidden" name="Consultorio" value="@Model.Consultorio" />
+                        <input type="hidden" name="NombreDueno" value="@Model.NombreDueno" />
+                        <input type="hidden" name="DocumentoDueno" value="@Model.DocumentoDueno" />
+                        <input type="hidden" name="MontoPago" value="@Model.MontoPago" />
+                        <input type="hidden" name="MetodoPago" value="@Model.MetodoPago" />
+
+                        <div class="mb-4">
+                            <label for="Sintomas" class="form-label fw-bold">
+                                <i class="fas fa-thermometer-half text-warning me-2"></i>Síntomas Observados
+                            </label>
+                            <textarea name="Sintomas" id="Sintomas" class="form-control" rows="2"
+                                      placeholder="Describa los síntomas...">@Model.Sintomas</textarea>
+                            <small class="text-muted">Opcional</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="Diagnostico" class="form-label fw-bold">
+                                <i class="fas fa-diagnoses text-danger me-2"></i>Diagnóstico <span class="text-danger">*</span>
+                            </label>
+                            <textarea name="Diagnostico" id="Diagnostico" class="form-control" rows="3"
+                                      placeholder="Ingrese el diagnóstico...">@Model.Diagnostico</textarea>
+                            <span class="text-danger" id="errorDiagnostico"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="Tratamiento" class="form-label fw-bold">
+                                <i class="fas fa-prescription text-primary me-2"></i>Tratamiento <span class="text-danger">*</span>
+                            </label>
+                            <textarea name="Tratamiento" id="Tratamiento" class="form-control" rows="3"
+                                      placeholder="Indique el tratamiento a seguir...">@Model.Tratamiento</textarea>
+                            <span class="text-danger" id="errorTratamiento"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="Medicamentos" class="form-label fw-bold">
+                                <i class="fas fa-pills text-info me-2"></i>Medicamentos Recetados
+                            </label>
+                            <textarea name="Medicamentos" id="Medicamentos" class="form-control" rows="2"
+                                      placeholder="Liste los medicamentos...">@Model.Medicamentos</textarea>
+                            <small class="text-muted">Opcional</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="Observaciones" class="form-label fw-bold">
+                                <i class="fas fa-sticky-note text-secondary me-2"></i>Observaciones
+                            </label>
+                            <textarea name="Observaciones" id="Observaciones" class="form-control" rows="2"
+                                      placeholder="Observaciones adicionales...">@Model.Observaciones</textarea>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="@Url.Action("listaCitaPorVeterinarios", "Veterinario")" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Volver
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg" id="btnFinalizar" style="background: linear-gradient(135deg, #706D60, #575252); border: none; color: #FFFFFF;">
+                                <i class="fas fa-check-circle me-2"></i>Finalizar Atención
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Validar formulario antes de enviar
+        document.getElementById('formAtencion').addEventListener('submit', function(e) {
+            var diagnostico = document.getElementById('Diagnostico').value.trim();
+            var tratamiento = document.getElementById('Tratamiento').value.trim();
+            var hayError = false;
+
+            // Limpiar errores previos
+            document.getElementById('errorDiagnostico').textContent = '';
+            document.getElementById('errorTratamiento').textContent = '';
+
+            if (!diagnostico) {
+                document.getElementById('errorDiagnostico').textContent = 'El diagnóstico es obligatorio';
+                document.getElementById('Diagnostico').classList.add('is-invalid');
+                hayError = true;
+            } else {
+                document.getElementById('Diagnostico').classList.remove('is-invalid');
+            }
+
+            if (!tratamiento) {
+                document.getElementById('errorTratamiento').textContent = 'El tratamiento es obligatorio';
+                document.getElementById('Tratamiento').classList.add('is-invalid');
+                hayError = true;
+            } else {
+                document.getElementById('Tratamiento').classList.remove('is-invalid');
+            }
+
+            if (hayError) {
+                e.preventDefault();
+                Swal.fire('Campos requeridos', 'Debe completar el diagnóstico y tratamiento.', 'warning');
+                return false;
+            }
+
+            // Deshabilitar botón para evitar doble envío
+            document.getElementById('btnFinalizar').disabled = true;
+            document.getElementById('btnFinalizar').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Procesando...';
+
+            return true;
+        });
+    </script>
+}
+

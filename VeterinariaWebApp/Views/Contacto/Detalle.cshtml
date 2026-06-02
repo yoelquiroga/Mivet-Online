@@ -1,0 +1,114 @@
+@model VeterinariaWebApp.Models.Contacto.Contacto
+@{
+    ViewData["Title"] = "Detalle del Mensaje";
+    Layout = "~/Views/Shared/_LayoutRecepcionista.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0 text-gray-800">
+        <i class="fas fa-envelope-open-text mr-2"></i>Detalle del Mensaje
+    </h1>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Volver
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">Información del Remitente</h6>
+                <span class="badge @Model.BadgeColor px-3 py-2" id="estadoBadge">
+                    @if (Model.estado_con == "Nuevo") { <text>🔴 Nuevo</text> }
+                    else if (Model.estado_con == "Leído") { <text>🟡 Leído</text> }
+                    else if (Model.estado_con == "Respondido") { <text>🟢 Respondido</text> }
+                    else if (Model.estado_con == "Pendiente Email") { <text>🟠 Pendiente Email</text> }
+                    else { @Model.estado_con }
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th style="width:150px; color:#94827F;">Nombre:</th>
+                            <td>@Model.NombreCompleto</td>
+                        </tr>
+                        <tr>
+                            <th style="color:#94827F;">Email:</th>
+                            <td>@Model.email_con</td>
+                        </tr>
+                        <tr>
+                            <th style="color:#94827F;">Teléfono:</th>
+                            <td>@(!string.IsNullOrEmpty(Model.telefono_con) ? Model.telefono_con : "—")</td>
+                        </tr>
+                        <tr>
+                            <th style="color:#94827F;">Servicio:</th>
+                            <td>@Model.servicio_con</td>
+                        </tr>
+                        <tr>
+                            <th style="color:#94827F;">Fecha:</th>
+                            <td>@Model.fecha_con.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <hr />
+                <h6 class="font-weight-bold text-gray-700">Mensaje:</h6>
+                <div class="p-3 bg-light rounded">
+                    <p class="mb-0">@Model.mensaje_con</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        @if (Model.estado_con == "Respondido")
+        {
+            <div class="card shadow mb-4 border-left-success">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-success">
+                        <i class="fas fa-check-circle mr-1"></i> Respuesta Enviada
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p><strong>Fecha:</strong> @(Model.fecha_respuesta_con?.ToString("dd/MM/yyyy HH:mm") ?? "—")</p>
+                    <div class="p-3 bg-light rounded">
+                        <p class="mb-0">@Model.respuesta_con</p>
+                    </div>
+                    @if (!Model.email_enviado_con)
+                    {
+                        <button class="btn btn-warning btn-block mt-3" id="btnReintentar">
+                            <i class="fas fa-redo mr-1"></i> Reintentar Envío
+                        </button>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-reply mr-1"></i> Responder
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="respuesta_con" class="font-weight-bold text-gray-700">Escriba su respuesta:</label>
+                        <textarea id="respuesta_con" class="form-control" rows="6" placeholder="Redacte su respuesta aquí...">@Model.respuesta_con</textarea>
+                    </div>
+                    <button class="btn btn-primary btn-block" id="btnEnviarRespuesta">
+                        <i class="fas fa-paper-plane mr-1"></i> Enviar Respuesta
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/contacto.js"></script>
+    <script>
+        var mensajeId = @Model.id_con;
+    </script>
+}

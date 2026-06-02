@@ -1,0 +1,361 @@
+@model VeterinariaWebApp.Models.Usuario.Cliente.RegistroClienteViewModel
+
+@{
+    ViewData["Title"] = "Registro - MiVet Online";
+    Layout = "~/Views/Shared/_LayoutHome.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<div class="wizard-container">
+
+    <!-- Decorative icons -->
+    <div class="deco-icon" style="top:6%;left:4%;width:50px;opacity:0.11;transform:rotate(-15deg);">
+        <img src="~/img/icons/patas.svg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:50px;">🐾</span>
+    </div>
+    <div class="deco-icon" style="top:10%;right:6%;width:42px;opacity:0.13;transform:rotate(30deg);">
+        <img src="~/img/icons/hueso.svg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:42px;">🦴</span>
+    </div>
+    <div class="deco-icon" style="top:38%;left:1%;width:46px;opacity:0.10;transform:rotate(20deg);">
+        <img src="~/img/icons/patas.svg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:46px;">🐾</span>
+    </div>
+    <div class="deco-icon" style="top:40%;right:3%;width:40px;opacity:0.14;transform:rotate(-35deg);">
+        <img src="~/img/icons/hueso.svg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:40px;">🦴</span>
+    </div>
+    <div class="deco-icon" style="top:58%;left:5%;width:38px;opacity:0.12;transform:rotate(-25deg);">
+        <img src="~/img/icons/hueso.svg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:38px;">🦴</span>
+    </div>
+    <div class="deco-icon" style="top:65%;right:2%;width:48px;opacity:0.09;transform:rotate(15deg);">
+        <img src="~/img/icons/patas.svg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:48px;">🐾</span>
+    </div>
+    <div class="deco-icon" style="top:80%;left:3%;width:44px;opacity:0.11;transform:rotate(40deg);">
+        <img src="~/img/icons/hueso.svg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:44px;">🦴</span>
+    </div>
+    <div class="deco-icon" style="top:85%;right:5%;width:52px;opacity:0.08;transform:rotate(-20deg);">
+        <img src="~/img/icons/patas.svg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:52px;">🐾</span>
+    </div>
+    <div class="deco-icon" style="bottom:6%;left:12%;width:36px;opacity:0.14;transform:rotate(-10deg);">
+        <img src="~/img/icons/hueso.svg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:36px;">🦴</span>
+    </div>
+    <div class="deco-icon" style="bottom:10%;right:12%;width:42px;opacity:0.10;transform:rotate(25deg);">
+        <img src="~/img/icons/patas.svg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:42px;">🐾</span>
+    </div>
+
+    <!-- PANEL IZQUIERDO -->
+    <aside class="wizard-sidebar">
+        <div class="brand">
+            <img src="~/img/icons/logohome.png" alt="MiVet Online" class="brand-logo-img" />
+        </div>
+
+        <ul class="steps">
+            <li class="active"><span></span> Datos personales</li>
+            <li><span></span> Información</li>
+            <li><span></span> Seguridad</li>
+            <li><span></span> Confirmación</li>
+        </ul>
+
+        <div class="sidebar-image"></div>
+    </aside>
+
+    <!-- PANEL DERECHO -->
+    <main class="wizard-content">
+        <h2 class="title">¡Bienvenido!</h2>
+        <p class="subtitle">Crea tu cuenta en MiVet Online</p>
+
+        <form asp-action="Registro" method="post" novalidate>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group-fixed">
+                        <label>Nombres</label>
+                        <input asp-for="nom_usr" class="form-control" />
+                        <span asp-validation-for="nom_usr" class="field-validation"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group-fixed">
+                        <label>Apellidos</label>
+                        <input asp-for="ape_usr" class="form-control" />
+                        <span asp-validation-for="ape_usr" class="field-validation"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group-fixed">
+                <label>Correo electrónico</label>
+                <input asp-for="cor_usr" type="email" class="form-control" />
+                <span asp-validation-for="cor_usr" class="field-validation"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group-fixed">
+                        <label>Tipo Doc.</label>
+                        <select asp-for="ide_doc" asp-items="@ViewBag.TiposDocumento" class="form-select"></select>
+                        <span asp-validation-for="ide_doc" class="field-validation"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="form-group-fixed">
+                        <label>Nro. Documento</label>
+                        <input asp-for="num_doc" class="form-control" />
+                        <span asp-validation-for="num_doc" class="field-validation"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group-fixed">
+                <label>Fecha de nacimiento</label>
+                <input asp-for="fna_usr" id="fna_usr" class="form-control datepicker" readonly />
+                <span asp-validation-for="fna_usr" class="field-validation"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group-fixed">
+                        <label>Contraseña</label>
+                        <input asp-for="pwd_usr" type="password" class="form-control" />
+                        <span asp-validation-for="pwd_usr" class="field-validation"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group-fixed">
+                        <label>Confirmar contraseña</label>
+                        <input asp-for="ConfirmarPassword" type="password" class="form-control" />
+                        <span asp-validation-for="ConfirmarPassword" class="field-validation"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <div class="login-link">
+                    <span>¿Ya tienes cuenta?</span>
+                    <a asp-action="Index" class="link-registro">Inicia sesión aquí</a>
+                </div>
+
+                <button type="submit" class="btn-next">
+                    Siguiente
+                    <i class="fas fa-arrow-right ms-2"></i>
+                </button>
+            </div>
+        </form>
+    </main>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        flatpickr("#fna_usr", { dateFormat: "Y-m-d" });
+    </script>
+}
+
+<style>
+    body {
+        background: #FDFDFD;
+        font-family: 'Segoe UI', sans-serif;
+        margin: 0;
+    }
+    body > main {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 100px 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        box-sizing: border-box;
+        position: relative;
+    }
+
+    /* CONTENEDOR */
+    .wizard-container {
+        max-width: 1100px;
+        width: 100%;
+        height: 650px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 35% 65%;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 15px 40px rgba(0,0,0,.25);
+    }
+
+    /* SIDEBAR */
+    .wizard-sidebar {
+        background: #5f6478;
+        color: #fff;
+        padding: 30px 25px;
+        position: relative;
+    }
+
+    .brand-logo-img {
+        width: 170px;
+        height: auto;
+        filter: brightness(0) invert(1);
+    }
+
+    .steps {
+        list-style: none;
+        padding: 0;
+        margin-top: 40px;
+    }
+
+        .steps li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+            opacity: .6;
+        }
+
+            .steps li span {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background: #cbd5e1;
+            }
+
+            .steps li.active {
+                opacity: 1;
+                font-weight: 600;
+            }
+
+                .steps li.active span {
+                    background: #fff;
+                }
+
+    .sidebar-image {
+        position: absolute;
+        bottom: 10px;
+        left: 0;
+        width: 100%;
+        height: 57%;
+        background: url('/img/perro.png') center / cover no-repeat;
+    }
+
+    /* PANEL DERECHO */
+    .wizard-content {
+        background: #fdeeee;
+        padding: 40px 60px 30px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .title {
+        font-weight: 700;
+    }
+
+    .subtitle {
+        color: #6b7280;
+        margin-bottom: 25px;
+    }
+
+    /* GRUPO FIJO */
+    .form-group-fixed {
+        position: relative;
+        margin-bottom: 14px;
+    }
+
+    /* INPUTS */
+    .form-control,
+    .form-select {
+        border-radius: 10px;
+        padding: 10px 14px;
+    }
+    .form-select {
+        background-color: #FFFFFF;
+    }
+
+    /* VALIDACIÓN SIN EMPUJAR */
+    .field-validation {
+        position: absolute;
+        bottom: -18px;
+        left: 4px;
+        font-size: 0.75rem;
+        color: #dc2626;
+    }
+
+        .field-validation:empty {
+            display: none;
+        }
+
+    /* BOTÓN */
+    .actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 30px;
+    }
+
+    .btn-next {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 20px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #5f6478, #374151);
+        color: #fff;
+        font-weight: 600;
+        font-size: 0.95rem;
+        letter-spacing: 0.3px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.35s ease;
+        box-shadow: 0 10px 22px rgba(0, 0, 0, 0.25);
+    }
+
+        /* Hover elegante */
+        .btn-next:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+        }
+
+        /* Click */
+        .btn-next:active {
+            transform: translateY(0) scale(0.98);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+        }
+
+    .link-registro {
+        color: #5f6478;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    /* RESPONSIVE */
+    @@media (max-width: 576px) {
+        .wizard-container
+
+    {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .actions {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .btn-next {
+        width: 100%;
+    }
+
+    }
+</style>

@@ -1,0 +1,120 @@
+@model VeterinariaWebApp.Models.Cita.CitaO
+@{
+    ViewData["Title"] = "Reagendar Cita";
+    Layout = "~/Views/Shared/_LayoutRecepcionista.cshtml";
+}
+
+<h1>Reagendar Cita #@Model.IdCita</h1>
+<hr>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-warning">Seleccionar nuevo horario</h6>
+            </div>
+            <div class="card-body">
+                <form asp-action="Reagendar" method="post" id="reagendarForm">
+                    <input type="hidden" asp-for="IdCita" />
+                    <input type="hidden" asp-for="IdVeterinario" />
+                    <input type="hidden" asp-for="Consultorio" />
+                    <input type="hidden" asp-for="CalendarioCita" id="CalendarioCita" />
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Veterinario</label>
+                        <input type="text" class="form-control" value="@ViewBag.NombreVeterinario" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Consultorio</label>
+                        <input type="text" class="form-control" value="@ViewBag.ConsultorioNombre" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Mascota</label>
+                        <input type="text" class="form-control" value="@ViewBag.NombreMascota" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Monto del Pago</label>
+                        <input type="text" class="form-control" value="S/ @ViewBag.MontoPago.ToString("0.00")" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Estado Actual</label>
+                        <input type="text" class="form-control" value="Cancelada" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Fecha (fija)</label>
+                        <input type="text" class="form-control" value="@Model.CalendarioCita.ToString("dd/MM/yyyy")" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nueva Hora <span class="text-danger">*</span></label>
+                        <select class="form-control" id="horaSelect">
+                            <option value="">-- Seleccione --</option>
+                            <option value="17:00">5:00 PM</option>
+                            <option value="17:30">5:30 PM</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-warning" id="btnReagendar" disabled>
+                        <i class="fas fa-calendar-check"></i> Reagendar Cita
+                    </button>
+                    <a asp-action="CitasCanceladas" class="btn btn-secondary">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const fechaOriginal = @Json.Serialize(ViewBag.FechaOriginal ?? "");
+
+        $('#horaSelect').on('change', function () {
+            $('#btnReagendar').prop('disabled', !$(this).val());
+        });
+
+        $('#reagendarForm').on('submit', function (e) {
+            e.preventDefault();
+
+            const hora = $('#horaSelect').val();
+            if (!hora) {
+                Swal.fire('Error', 'Seleccione una hora.', 'error');
+                return;
+            }
+
+            const fechaHoraStr = fechaOriginal + ' ' + hora;
+
+            Swal.fire({
+                title: '¿Confirmar reagenda?',
+                html: `
+                    <div style="text-align:left">
+                        <p><strong>Veterinario:</strong> @Html.Raw(Json.Serialize(ViewBag.NombreVeterinario??""))</p>
+                        <p><strong>Consultorio:</strong> @ViewBag.ConsultorioNombre</p>
+                        <p><strong>Mascota:</strong> @Html.Raw(Json.Serialize(ViewBag.NombreMascota??""))</p>
+                        <p><strong>Monto:</strong> S/ @ViewBag.MontoPago.ToString("0.00")</p>
+                        <p><strong>Fecha:</strong> @Model.CalendarioCita.ToString("dd/MM/yyyy")</p>
+                        <p><strong>Nueva Hora:</strong> ${hora}</p>
+                        <hr>
+                        <p class="text-info mb-0"><i class="fas fa-info-circle"></i> Al confirmar, la cita pasará a estado <strong>Pendiente</strong> nuevamente.</p>
+                    </div>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#f0ad4e',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, reagendar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then(result => {
+                if (result.isConfirmed) {
+                    $('#CalendarioCita').val(fechaHoraStr);
+                    $('#reagendarForm')[0].submit();
+                }
+            });
+        });
+    </script>
+}

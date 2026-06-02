@@ -1,0 +1,198 @@
+@{
+    var isLoggedIn = Context.Session.GetInt32("ClienteId").HasValue
+        || Context.Session.GetInt32("VeterinarioId").HasValue
+        || Context.Session.GetInt32("RecepcionistaId").HasValue;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - MI VET ONLINE</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="~/css/home-styles.css" rel="stylesheet" />
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav id="mainNavbar" class="home-navbar">
+        <div class="nav-container">
+            <a href="@Url.Action("Index", "Home")" class="nav-logo">
+                <img src="~/img/icons/logohome.png" alt="MI VET ONLINE" class="nav-logo-img" />
+            </a>
+
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="/Home/Index#hero" class="nav-link active">Inicio</a></li>
+                <li><a href="/Home/Index#servicios" class="nav-link">Servicios</a></li>
+                <li><a href="/Home/Index#nosotros" class="nav-link">Nosotros</a></li>
+                <li><a href="/Home/Index#contacto" class="nav-link">Contacto</a></li>
+            </ul>
+
+            <div class="nav-auth">
+                @if (isLoggedIn)
+                {
+                    var idCliente = Context.Session.GetInt32("ClienteId") ?? 0;
+                    <a href="@Url.Action("listaCitaPorCliente", "Cliente")" class="btn-auth btn-primary-solid">
+                        <i class="fas fa-calendar-check me-1"></i> Ver mis reservas
+                    </a>
+                    <a href="#" class="btn-auth btn-logout" id="btnLogout">
+                        <i class="fas fa-sign-out-alt me-1"></i> Cerrar sesión
+                    </a>
+                }
+                else
+                {
+                    <a href="@Url.Action("Index", "Login")" class="btn-auth btn-primary-solid">Iniciar Sesión</a>
+                    <a href="@Url.Action("Registro", "Login")" class="btn-auth btn-outline">Regístrate</a>
+                }
+            </div>
+
+            <button class="nav-toggle" id="navToggle" aria-label="Menú">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main>
+        @RenderBody()
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="home-footer" id="contacto">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <img src="~/img/pataslogo.png" alt="Mivet Online" class="footer-logo-icon"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';" />
+                    <span class="footer-logo-text">Mivet Online</span>
+                </div>
+                <p>Agenda citas veterinarias de forma rápida y sencilla. Cuidamos a tu mejor amigo con profesionales certificados.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Enlaces</h4>
+                <a href="/Home/Index">Inicio</a>
+                <a href="/Home/Index#servicios">Servicios</a>
+                <a href="/Home/Index#nosotros">Sobre nosotros</a>
+                <a href="/Home/Index#contacto">Contacto</a>
+            </div>
+            <div class="footer-contact">
+                <h4>Contacto</h4>
+                <div class="footer-contact-item">
+                    <i class="fas fa-phone"></i>
+                    <span>+51 963258852</span>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="far fa-envelope"></i>
+                    <span>contactomivetonline@gmail.com</span>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Ejército 391, MIRAFLORES, 222-1478, Lima</span>
+                </div>
+            </div>
+            <div class="footer-social">
+                <h4>Síguenos</h4>
+                <div class="social-icons">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; @DateTime.Now.Year MI VET ONLINE — Todos los derechos reservados
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/js/contacto.js"></script>
+    <script>
+        // Navbar scroll effect
+        const navbar = document.getElementById('mainNavbar');
+        window.addEventListener('scroll', function () {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile hamburger toggle
+        document.getElementById('navToggle').addEventListener('click', function () {
+            document.getElementById('navMenu').classList.toggle('show');
+            document.querySelector('.nav-auth').classList.toggle('show');
+        });
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('.nav-link').forEach(function (link) {
+            link.addEventListener('click', function (e) {
+                var href = this.getAttribute('href');
+                var hashIndex = href.indexOf('#');
+                var hash = hashIndex >= 0 ? href.substring(hashIndex) : '';
+                if (hash) {
+                    var target = document.querySelector(hash);
+                    if (target) {
+                        e.preventDefault();
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        document.querySelectorAll('.nav-link').forEach(function (l) { l.classList.remove('active'); });
+                        this.classList.add('active');
+                        document.getElementById('navMenu').classList.remove('show');
+                        document.querySelector('.nav-auth').classList.remove('show');
+                    }
+                }
+            });
+        });
+
+        // Update active nav link on scroll
+        const sections = document.querySelectorAll('section[id]');
+        window.addEventListener('scroll', function () {
+            let current = '';
+            sections.forEach(function (section) {
+                const top = section.offsetTop - 150;
+                if (window.scrollY >= top) {
+                    current = section.getAttribute('id');
+                }
+            });
+            document.querySelectorAll('.nav-link').forEach(function (link) {
+                link.classList.remove('active');
+                var href = link.getAttribute('href');
+                var hashIndex = href.indexOf('#');
+                var hash = hashIndex >= 0 ? href.substring(hashIndex) : '';
+                if (hash === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Logout confirmation
+        var logoutBtn = document.getElementById('btnLogout');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: '¿Cerrar sesión?',
+                    text: '¿Estás seguro de que deseas salir de tu cuenta?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#574C52',
+                    cancelButtonColor: '#94827F',
+                    confirmButtonText: 'Sí, cerrar sesión',
+                    cancelButtonText: 'Cancelar',
+                    background: '#FDFDFD',
+                    color: '#4C3726',
+                    iconColor: '#D7C8C1'
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        window.location.href = '@Url.Action("CerrarSesion", "Cliente")';
+                    }
+                });
+            });
+        }
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

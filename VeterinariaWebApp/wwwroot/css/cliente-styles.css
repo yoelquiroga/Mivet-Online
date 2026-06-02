@@ -1,0 +1,499 @@
+/* ==============================================================
+   CLIENTE DASHBOARD - GLASS & ORANGE THEME (AISLADO)
+   ============================================================== */
+
+.client-dashboard {
+    background-color: #F3F4F6;
+    min-height: 100vh;
+    padding-bottom: 2rem;
+}
+
+/* ---------- KPI CARDS 2x2 ---------- */
+.client-kpi-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    padding: 1.25rem 1.25rem;
+    border: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.client-kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+.client-kpi-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    background: rgba(249, 115, 22, 0.12);
+    color: #F97316;
+}
+
+.client-kpi-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6B7280;
+    margin-bottom: 2px;
+}
+
+.client-kpi-value {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #1A1A1A;
+    line-height: 1.2;
+}
+
+.client-kpi-sub {
+    font-size: 0.7rem;
+    color: #9CA3AF;
+    margin-top: 2px;
+}
+
+/* Glass card (Total Gastado) */
+.client-glass-card {
+    background: linear-gradient(135deg, #FFF7ED 0%, #FFFFFF 50%, #FEF2E7 100%);
+    border: 1px solid rgba(249, 115, 22, 0.15);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(249, 115, 22, 0.08);
+    padding: 1.25rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.client-glass-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(249, 115, 22, 0.15);
+}
+
+.client-glass-card::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 100px;
+    height: 100px;
+    background: rgba(249, 115, 22, 0.06);
+    border-radius: 50%;
+}
+
+.client-glass-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #F97316, #FDBA74);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+    position: relative;
+    z-index: 1;
+}
+
+.client-glass-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #B45309;
+    margin-bottom: 2px;
+}
+
+.client-glass-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #1A1A1A;
+    line-height: 1.2;
+}
+
+.client-glass-sub {
+    font-size: 0.7rem;
+    color: #D97706;
+    margin-top: 2px;
+}
+
+/* ---------- CARDS ---------- */
+.client-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    border: none;
+    overflow: hidden;
+}
+
+.client-card-header {
+    padding: 1rem 1.25rem 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.client-card-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0;
+}
+
+.client-card-body {
+    padding: 1rem 1.25rem;
+}
+
+.client-card-link {
+    font-size: 0.8rem;
+    color: #F97316;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.client-card-link:hover {
+    color: #EA580C;
+    text-decoration: none;
+}
+
+/* ---------- CALENDARIO ---------- */
+.client-calendar-wrapper .fc {
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.client-calendar-wrapper .fc .fc-toolbar-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1F2937;
+}
+
+.client-calendar-wrapper .fc .fc-button-primary {
+    background: #F97316;
+    border-color: #F97316;
+    font-size: 0.75rem;
+    border-radius: 8px;
+}
+
+.client-calendar-wrapper .fc .fc-button-primary:hover {
+    background: #EA580C;
+    border-color: #EA580C;
+}
+
+.client-calendar-wrapper .fc .fc-button-primary:not(:disabled).fc-button-active {
+    background: #EA580C;
+    border-color: #EA580C;
+}
+
+.client-calendar-wrapper .fc .fc-scrollgrid-sync-table {
+    border: none !important;
+    background: transparent !important;
+}
+
+.client-calendar-wrapper .fc .fc-daygrid-day {
+    background: transparent !important;
+    border: none !important;
+    padding: 4px 1px !important;
+    text-align: center;
+    vertical-align: top;
+}
+
+.client-calendar-wrapper .fc .fc-daygrid-day.fc-day-other {
+    opacity: 0.3;
+}
+
+.client-calendar-wrapper .fc .fc-daygrid-day-number {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    background: #F9FAFB !important;
+    color: #1F2937 !important;
+    font-weight: 600 !important;
+    font-size: 0.8rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease;
+}
+
+.client-calendar-wrapper .fc .fc-daygrid-day-number:hover {
+    background: #FEE2E2 !important;
+    transform: scale(1.1);
+}
+
+.client-calendar-wrapper .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+    background: linear-gradient(135deg, #F97316 0%, #FDBA74 100%) !important;
+    color: #FFFFFF !important;
+    font-weight: 800 !important;
+    box-shadow: 0 3px 10px rgba(249,115,22,0.35);
+    transform: scale(1.12);
+    width: 34px !important;
+    height: 34px !important;
+}
+
+.client-calendar-wrapper .fc .fc-col-header {
+    border: none !important;
+}
+
+.client-calendar-wrapper .fc .fc-col-header-cell {
+    border: none !important;
+    padding: 4px 0;
+}
+
+.client-calendar-wrapper .fc .fc-col-header-cell-cushion {
+    font-weight: 700 !important;
+    color: #F97316 !important;
+    text-transform: uppercase;
+    font-size: 0.7rem !important;
+    letter-spacing: 0.5px;
+    text-decoration: none !important;
+}
+
+/* Event pills */
+.client-cal-event {
+    background: #FF5C3B !important;
+    border-radius: 6px !important;
+    margin: 1px 4px !important;
+    padding: 2px 6px !important;
+    font-size: 0.6rem !important;
+    font-weight: 700 !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    display: block !important;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(227, 50, 16, 0.35);
+}
+
+/* ---------- LISTA PRÓXIMAS CITAS ---------- */
+.client-appt-item {
+    display: flex;
+    align-items: center;
+    padding: 0.65rem 0.75rem;
+    border-radius: 12px;
+    background: #F9FAFB;
+    margin-bottom: 0.5rem;
+    border-left: 3px solid #F97316;
+    transition: background 0.2s;
+}
+
+.client-appt-item:hover {
+    background: #FEF2E7;
+}
+
+.client-appt-time {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #F97316;
+    min-width: 55px;
+}
+
+.client-appt-info {
+    flex: 1;
+    margin: 0 0.5rem;
+}
+
+.client-appt-pet {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #1A1A1A;
+    margin: 0;
+}
+
+.client-appt-vet {
+    font-size: 0.7rem;
+    color: #6B7280;
+    margin: 0;
+}
+
+.client-appt-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.client-appt-empty {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: #9CA3AF;
+}
+
+.client-appt-empty i {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+/* ---------- GRÁFICOS ---------- */
+.client-chart-wrapper {
+    position: relative;
+    width: 100%;
+    height: 280px;
+}
+
+.client-chart-wrapper canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.client-chart-empty {
+    display: none;
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #9CA3AF;
+}
+
+.client-chart-empty i {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.client-chart-empty p {
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+/* ---------- DONUT CENTER ---------- */
+.client-donut-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+}
+
+.client-donut-center-value {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #F97316;
+    line-height: 1;
+}
+
+.client-donut-center-label {
+    font-size: 0.65rem;
+    color: #9CA3AF;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ---------- ÚLTIMA ATENCIÓN ---------- */
+.client-last-attention {
+    border-left: 4px solid #F97316;
+    border-radius: 12px;
+    padding: 1.25rem;
+    background: #FFF7ED;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.client-last-attention-empty {
+    text-align: center;
+    color: #9CA3AF;
+    padding: 1rem;
+}
+
+.client-last-attention-empty i {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.client-last-attention-empty p {
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.client-last-pet {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #1A1A1A;
+    margin-bottom: 0.25rem;
+}
+
+.client-last-date {
+    font-size: 0.75rem;
+    color: #F97316;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.client-last-detail {
+    font-size: 0.85rem;
+    color: #4B5563;
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+}
+
+.client-last-detail strong {
+    color: #1F2937;
+}
+
+.client-last-monto {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #F97316;
+    margin-top: auto;
+}
+
+/* ---------- MISCELLANEOUS ---------- */
+.client-loading {
+    text-align: center;
+    padding: 2rem;
+    color: #9CA3AF;
+}
+
+.client-loading i {
+    font-size: 1.5rem;
+    animation: client-spin 1s linear infinite;
+}
+
+@keyframes client-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.client-badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 20px;
+    font-size: 0.65rem;
+    font-weight: 700;
+}
+
+.client-badge-pendiente {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.client-badge-atencion {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+
+.client-badge-atendida {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.client-badge-cancelada {
+    background: #FEE2E2;
+    color: #991B1B;
+}

@@ -1,0 +1,369 @@
+/* ===== PDF STYLES - MI VET ONLINE ===== */
+/* Paleta: Marrón #574C52, Marrón Medio #94827F, Beige #E0CEA0, Marrón Beige #D7C8C1 */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #212529;
+    font-size: 14px;
+    background: #fff;
+}
+
+.wrapper {
+    max-width: 750px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.wrapper-wide {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+/* ===== HEADER ===== */
+.header {
+    padding: 30px 40px;
+    border-bottom: 2px solid #D7C8C1;
+}
+
+.header-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.header-table td {
+    vertical-align: middle;
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-logo img {
+    height: 50px;
+    width: auto;
+}
+
+.header-logo-text {
+    font-size: 24px;
+    font-weight: bold;
+    color: #574C52;
+}
+
+.header-meta {
+    text-align: right;
+    color: #94827F;
+    font-size: 12px;
+}
+
+.header-meta strong {
+    color: #574C52;
+    font-size: 14px;
+}
+
+/* ===== TITLE SECTION ===== */
+.title-section {
+    text-align: center;
+    padding: 25px 40px;
+}
+
+.title-section h1 {
+    margin: 0;
+    color: #574C52;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #94827F;
+    display: inline-block;
+}
+
+.title-section p {
+    margin: 8px 0 0 0;
+    color: #94827F;
+    font-size: 13px;
+}
+
+/* ===== CONTENT ===== */
+.content {
+    padding: 20px 40px;
+}
+
+.section-title {
+    color: #574C52;
+    font-size: 16px;
+    margin: 20px 0 15px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #94827F;
+    font-weight: 700;
+}
+
+.section-title:first-child {
+    margin-top: 0;
+}
+
+/* ===== DATA TABLE (key-value) ===== */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.data-table td {
+    padding: 10px 0;
+    border-bottom: 1px solid #D7C8C1;
+}
+
+.data-table .label {
+    color: #94827F;
+    width: 40%;
+}
+
+.data-table .value {
+    color: #212529;
+    font-weight: 500;
+}
+
+/* ===== GRID TABLE (listados) ===== */
+table.grid {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    border: 1px solid #D7C8C1;
+}
+
+table.grid thead {
+    background: #94827F;
+}
+
+table.grid th {
+    padding: 12px 15px;
+    text-align: left;
+    color: #FFFFFF;
+    font-weight: 600;
+    border-bottom: 2px solid #8A7A76;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+table.grid td {
+    padding: 10px 15px;
+    border-bottom: 1px solid #D7C8C1;
+    color: #212529;
+}
+
+table.grid tbody tr:nth-child(even) {
+    background: #F9F9F9;
+}
+
+table.grid tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ===== SUMMARY BOX ===== */
+.summary-box {
+    background: #E0CEA0;
+    border: 1px solid #D7C8C1;
+    border-radius: 6px;
+    padding: 14px 20px;
+    margin-bottom: 20px;
+    display: inline-block;
+}
+
+.summary-box .num {
+    font-size: 22px;
+    font-weight: bold;
+    color: #574C52;
+}
+
+.summary-box .lbl {
+    font-size: 12px;
+    color: #574C52;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* ===== PET BOX ===== */
+.pet-box {
+    background: #E0CEA0;
+    border: 1px solid #D7C8C1;
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+}
+
+.pet-box .emoji {
+    font-size: 36px;
+}
+
+.pet-box .name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #574C52;
+    margin-top: 4px;
+}
+
+.pet-box .details {
+    color: #574C52;
+    font-size: 13px;
+}
+
+/* ===== MEDICAL BOX ===== */
+.medical-box {
+    background: #F9F9F9;
+    border: 1px solid #D7C8C1;
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+}
+
+.medical-box .field {
+    margin-bottom: 14px;
+}
+
+.medical-box .field:last-child {
+    margin-bottom: 0;
+}
+
+.medical-box .field-label {
+    font-weight: 700;
+    color: #574C52;
+    font-size: 12px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.medical-box .field-value {
+    background: #fff;
+    padding: 10px 12px;
+    border: 1px solid #D7C8C1;
+    border-radius: 4px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #212529;
+}
+
+.attend-date {
+    background: #E0CEA0;
+    border: 1px solid #D7C8C1;
+    border-radius: 4px;
+    padding: 8px 14px;
+    text-align: center;
+    color: #574C52;
+    font-size: 13px;
+    margin-bottom: 14px;
+}
+
+.attend-date strong {
+    color: #574C52;
+}
+
+/* ===== STATUS BADGES (colores semánticos) ===== */
+.status-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-badge.success {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-badge.danger {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.status-badge.warning {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-badge.info {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-badge.secondary {
+    background: #e2e3e5;
+    color: #383d41;
+}
+
+/* ===== TOTALS ===== */
+.totals {
+    padding: 20px 40px 30px;
+    text-align: right;
+}
+
+.totals-inner {
+    display: inline-block;
+    text-align: right;
+}
+
+.totals-inner .line {
+    padding: 8px 0;
+    color: #94827F;
+    font-size: 14px;
+}
+
+.totals-inner .line span {
+    color: #212529;
+    margin-left: 20px;
+}
+
+.totals-inner .total {
+    padding: 10px 0;
+    border-top: 2px solid #574C52;
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #574C52;
+}
+
+.totals-inner .total span {
+    margin-left: 30px;
+}
+
+/* ===== NO DATA ===== */
+.no-data {
+    text-align: center;
+    padding: 30px;
+    color: #94827F;
+    font-style: italic;
+}
+
+/* ===== RECORD COUNT ===== */
+.record-count {
+    margin-top: 15px;
+    font-size: 12px;
+    color: #94827F;
+    text-align: right;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+    padding: 25px 40px;
+    border-top: 1px solid #D7C8C1;
+    text-align: center;
+    color: #94827F;
+    font-size: 11px;
+    margin-top: 30px;
+}
+
+.footer p {
+    margin: 5px 0;
+}
+
+.footer .brand {
+    color: #574C52;
+    font-weight: bold;
+}

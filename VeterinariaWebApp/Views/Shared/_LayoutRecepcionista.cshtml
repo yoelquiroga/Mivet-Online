@@ -1,0 +1,290 @@
+﻿
+@{
+    var recepcionistaId = Context.Session.GetInt32("RecepcionistaId");
+    if (recepcionistaId == null || recepcionistaId == 0)
+    {
+        throw new InvalidOperationException("Sesión de recepcionista no encontrada. Por favor, inicie sesión nuevamente.");
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+
+    <title>MiVet Online - Recepcionista</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+
+    <link href="~/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
+
+    <link href="~/css/sb-admin-2.min.css" rel="stylesheet" />
+    <link href="~/css/dashboard-styles.css" rel="stylesheet" />
+    <link href="~/css/recepcionista-styles.css" rel="stylesheet" />
+    <link href="~/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+
+<body id="page-top">
+    <div id="wrapper">
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="@Url.Action("Index", "Recepcionista")">
+                <div class="sidebar-brand-icon">
+                    <img src="~/img/icons/logodashboard.png" alt="Mivet Online" class="sidebar-logo-img sidebar-logo-expanded">
+                    <img src="~/img/pataslogo.png" alt="Mivet Online" class="sidebar-logo-img sidebar-logo-collapsed">
+                </div>
+            </a>
+
+            <hr class="sidebar-divider my-0" />
+
+            <li class="nav-item active">
+                <a class="nav-link" href="@Url.Action("Index", "Recepcionista")">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <hr class="sidebar-divider" />
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePaciente" aria-expanded="true" aria-controls="collapsePaciente">
+                    <i class="fas fa-fw fa-user"></i>
+                    <span>Clientes</span>
+                </a>
+                <div id="collapsePaciente" class="collapse" aria-labelledby="headingPacientes" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Gestión de Clientes:</h6>
+                        <a class="collapse-item" href="@Url.Action("listarClientes", "Recepcionista")">Ver Clientes</a>
+           
+                    </div>
+                </div>
+            </li>
+
+            <hr class="sidebar-divider" />
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseMedicos" aria-expanded="true" aria-controls="collapseMedicos">
+                    <i class="fas fa-fw fa-user-md"></i>
+                    <span>Veterinarios</span>
+                </a>
+                <div id="collapseMedicos" class="collapse" aria-labelledby="headingMedicos" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Gestión de Veterinarios:</h6>
+                        <a class="collapse-item" href="@Url.Action("listarVeterinarios", "Recepcionista")">Ver Veterinarios</a>
+                        <a class="collapse-item" href="@Url.Action("NuevoVeterinario", "Recepcionista")">Agregar Veterinario</a>
+                 
+                    </div>
+                </div>
+            </li>
+
+
+
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCitas" aria-expanded="true" aria-controls="collapseCitas">
+                    <i class="fas fa-fw fa-calendar-check"></i>
+                    <span>Citas</span>
+                </a>
+                <div id="collapseCitas" class="collapse" aria-labelledby="headingCitas" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Gestión de Citas:</h6>
+                        <a class="collapse-item" href="@Url.Action("CitasPendientes", "Cita")">Citas Pendientes</a>
+
+                        <a class="collapse-item" href="@Url.Action("CitasAtendidas", "Cita")">Citas Atendidas</a>
+                        <a class="collapse-item" href="@Url.Action("CitasCanceladas", "Cita")">Citas Canceladas</a>
+                    </div>
+                </div>
+            </li>
+
+
+
+
+            <hr class="sidebar-divider" />
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePagos" aria-expanded="true" aria-controls="collapsePagos">
+                    <i class="fas fa-fw fa-credit-card"></i>
+                    <span>Pagos</span>
+                </a>
+                <div id="collapsePagos" class="collapse" aria-labelledby="headingPagos" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Gestión de Pagos:</h6>                      
+                        <a class="collapse-item" asp-controller="Pago" asp-action="PagosPendientes">Pagos por Confirmar</a>
+                        <a class="collapse-item" asp-controller="Pago" asp-action="PagosRealizados">Pagos Realizados</a>
+                    </div>
+                </div>
+            </li>
+
+            <!-- Contactos dropdown -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseContacto" aria-expanded="true" aria-controls="collapseContacto">
+                    <i class="fas fa-fw fa-envelope"></i>
+                    <span>Contactos</span>
+                    <span class="badge badge-danger ml-auto" id="contactoBadge" style="display:none;">0</span>
+                </a>
+                <div id="collapseContacto" class="collapse" aria-labelledby="headingContacto" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Gestión de Mensajes:</h6>
+                        <a class="collapse-item" href="@Url.Action("Index", "Contacto")">Ver Mensajes</a>
+                    </div>
+                </div>
+            </li>
+
+            <hr class="sidebar-divider d-none d-md-block" />
+
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+        </ul>
+
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item dropdown no-arrow d-sm-none">
+                            <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-search fa-fw"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in" aria-labelledby="searchDropdown">
+                                <form class="form-inline mr-auto w-100 navbar-search">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2" />
+                                        <div class="input-group-append">
+                                            <button class="btn btn-primary" type="button">
+                                                <i class="fas fa-search fa-sm"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </li>
+
+                        <div class="topbar-divider d-none d-sm-block"></div>
+
+                        <li class="nav-item d-none d-sm-flex align-items-center mr-3">
+                            <span class="text-gray-600 small">
+                                <i class="fas fa-hand-sparkles mr-1"></i>¡Hola, <strong>@(Context.Session.GetString("NombreUsuario") ?? "Usuario")</strong>!
+                            </span>
+                        </li>
+
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img class="img-profile rounded-circle" src="~/img/undraw_profile.svg">
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#" id="btnLogoutRecepcionista">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Cerrar sesión
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+
+                <div class="container-fluid">
+                    @RenderBody()
+                </div>
+            </div>
+
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        MiVet Online &copy; <span id="year"></span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <script>
+        const currentYear = new Date().getFullYear();
+        document.getElementById('year').textContent = currentYear;
+    </script>
+
+    <script src="~/vendor/jquery/jquery.min.js"></script>
+    <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="~/js/sb-admin-2.min.js"></script>
+    <script src="~/vendor/chart.js/Chart.min.js"></script>
+    <script src="~/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src="~/js/demo/chart-area-demo.js"></script>
+    <script src="~/js/demo/chart-pie-demo.js"></script>
+    <script src="~/js/demo/datatables-demo.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/js/contacto.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('/Contacto/ObtenerContadores')
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (data && data.nuevos > 0) {
+                        var badge = document.getElementById('contactoBadge');
+                        if (badge) { badge.textContent = data.nuevos; badge.style.display = 'inline'; }
+                    }
+                })
+                .catch(function () { /* ignore badge errors */ });
+        });
+    </script>
+    <script>
+        // Logout confirmation with Swal
+        document.addEventListener('DOMContentLoaded', function () {
+            var btn = document.getElementById('btnLogoutRecepcionista');
+            if (btn) {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: '¿Cerrar sesión?',
+                        text: '¿Estás seguro de que deseas salir de tu cuenta?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#574C52',
+                        cancelButtonColor: '#94827F',
+                        confirmButtonText: 'Sí, cerrar sesión',
+                        cancelButtonText: 'Cancelar',
+                        background: '#FDFDFD',
+                        color: '#4C3726',
+                        iconColor: '#D7C8C1'
+                    }).then(function (result) {
+                        if (result.isConfirmed) {
+                            window.location.href = '@Url.Action("Index", "Login")';
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+    <script>
+        @if (TempData["Exito"] != null)
+        {
+            <text>
+            Swal.fire({ icon: 'success', title: 'Éxito', text: @Json.Serialize(TempData["Exito"]), toast: true, position: 'top-end', showConfirmButton: false, timer: 4000, timerProgressBar: true });
+            </text>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <text>
+            Swal.fire({ icon: 'error', title: 'Error', text: @Json.Serialize(TempData["Error"]), toast: true, position: 'top-end', showConfirmButton: false, timer: 5000, timerProgressBar: true });
+            </text>
+        }
+        function showToast(message, type) {
+            const icons = { success: 'success', error: 'error', info: 'info', warning: 'warning' };
+            Swal.fire({ icon: icons[type] || 'info', text: message, toast: true, position: 'top-end', showConfirmButton: false, timer: 4000, timerProgressBar: true });
+        }
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,457 @@
+/* ===================================================================
+   VETERINARIO DASHBOARD - AISLADO (no afecta Recepcionista/Cliente)
+   =================================================================== */
+
+/* ---------- LAYOUT BASE ---------- */
+.vet-dashboard {
+    background-color: #F8F9FA;
+    min-height: 100vh;
+    padding-bottom: 2rem;
+}
+
+/* ---------- KPI CARDS ---------- */
+.vet-kpi-card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+    padding: 1.25rem 1.5rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.vet-kpi-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+.vet-kpi-card-highlight {
+    background: linear-gradient(135deg, #575252, #94827F);
+    color: #ffffff;
+}
+
+.vet-kpi-card-highlight .vet-kpi-label,
+.vet-kpi-card-highlight .vet-kpi-sub {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.vet-kpi-card-highlight .vet-kpi-icon {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+.vet-kpi-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #94827F;
+    margin-bottom: 0.25rem;
+}
+
+.vet-kpi-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #2D2D2D;
+    line-height: 1.2;
+}
+
+.vet-kpi-card-highlight .vet-kpi-value {
+    color: #ffffff;
+}
+
+.vet-kpi-sub {
+    font-size: 0.75rem;
+    color: #888888;
+    margin-top: 0.25rem;
+}
+
+.vet-kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+/* ---------- CARDS GENÉRICAS ---------- */
+.vet-card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+    border: none;
+    overflow: hidden;
+}
+
+.vet-card-header {
+    padding: 1.25rem 1.5rem 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.vet-card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #575252;
+    margin: 0;
+}
+
+.vet-card-body {
+    padding: 1.25rem 1.5rem;
+}
+
+.vet-card-link {
+    font-size: 0.8rem;
+    color: #94827F;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.vet-card-link:hover {
+    color: #575252;
+    text-decoration: none;
+}
+
+/* ---------- CALENDARIO (MODERN PICKER) ---------- */
+.vet-calendar-wrapper .fc {
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.vet-calendar-wrapper .fc .fc-toolbar-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #575252;
+}
+
+.vet-calendar-wrapper .fc .fc-button-primary {
+    background: #94827F;
+    border-color: #94827F;
+    font-size: 0.8rem;
+    border-radius: 10px;
+}
+
+.vet-calendar-wrapper .fc .fc-button-primary:hover {
+    background: #575252;
+    border-color: #575252;
+}
+
+.vet-calendar-wrapper .fc .fc-button-primary:not(:disabled).fc-button-active {
+    background: #575252;
+    border-color: #575252;
+}
+
+/* ─── Modern Picker: días como botones flotantes ─── */
+.vet-calendar-wrapper .fc .fc-scrollgrid-sync-table {
+    border: none !important;
+    background: transparent !important;
+}
+
+.vet-calendar-wrapper .fc .fc-daygrid-day {
+    background: transparent !important;
+    border: none !important;
+    padding: 6px 2px !important;
+    text-align: center;
+    vertical-align: top;
+}
+
+.vet-calendar-wrapper .fc .fc-daygrid-day.fc-day-other {
+    opacity: 0.35;
+}
+
+/* Número de día como botón circular */
+.vet-calendar-wrapper .fc .fc-daygrid-day-number {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    background: #F8F9FA !important;
+    color: #2C2420 !important;
+    font-weight: 700 !important;
+    font-size: 0.85rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+.vet-calendar-wrapper .fc .fc-daygrid-day-number:hover {
+    background: #E8E8E8 !important;
+    transform: scale(1.1);
+}
+
+/* Día actual - círculo oscuro */
+.vet-calendar-wrapper .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+    background: linear-gradient(135deg, #2C2420 0%, #575252 100%) !important;
+    color: #FFFFFF !important;
+    font-weight: 900 !important;
+    box-shadow: 0 4px 12px rgba(44,36,32,0.4);
+    transform: scale(1.15);
+    width: 38px !important;
+    height: 38px !important;
+}
+
+/* Headers de días (Lun, Mar, etc.) */
+.vet-calendar-wrapper .fc .fc-col-header {
+    border: none !important;
+}
+
+.vet-calendar-wrapper .fc .fc-col-header-cell {
+    border: none !important;
+    padding: 6px 0;
+}
+
+.vet-calendar-wrapper .fc .fc-col-header-cell-cushion {
+    font-weight: 700 !important;
+    color: #94827F !important;
+    text-transform: uppercase;
+    font-size: 0.75rem !important;
+    letter-spacing: 0.5px;
+    text-decoration: none !important;
+}
+
+/* Event pills - estilo moderno debajo del número */
+.vet-cal-event-pendiente {
+    background: #FFE082 !important;
+    border-radius: 10px !important;
+    margin: 2px 6px !important;
+    padding: 2px 6px !important;
+    font-size: 0.65rem !important;
+    font-weight: 700 !important;
+    color: #5D3A00 !important;
+    border: none !important;
+    display: block !important;
+    text-align: center;
+}
+
+.vet-cal-event-atencion {
+    background: #A8D8D9 !important;
+    border-radius: 10px !important;
+    margin: 2px 6px !important;
+    padding: 2px 6px !important;
+    font-size: 0.65rem !important;
+    font-weight: 700 !important;
+    color: #083B44 !important;
+    border: none !important;
+    display: block !important;
+    text-align: center;
+}
+
+.vet-cal-event-atendida {
+    background: #C2ADA5 !important;
+    border-radius: 10px !important;
+    margin: 2px 6px !important;
+    padding: 2px 6px !important;
+    font-size: 0.65rem !important;
+    font-weight: 700 !important;
+    color: #2C2420 !important;
+    border: none !important;
+    display: block !important;
+    text-align: center;
+}
+
+/* ---------- LISTA DE CITAS / COLA ---------- */
+.vet-queue-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    background: #F8F9FA;
+    margin-bottom: 0.5rem;
+    transition: background 0.2s;
+}
+
+.vet-queue-item:hover {
+    background: #F0F1F3;
+}
+
+.vet-queue-time {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #575252;
+    min-width: 60px;
+}
+
+.vet-queue-info {
+    flex: 1;
+    margin: 0 0.75rem;
+}
+
+.vet-queue-pet {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #2D2D2D;
+    margin: 0;
+}
+
+.vet-queue-owner {
+    font-size: 0.75rem;
+    color: #888888;
+    margin: 0;
+}
+
+.vet-queue-status {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.vet-queue-status-pendiente {
+    background: #FFF3CD;
+    color: #856404;
+}
+
+.vet-queue-status-atencion {
+    background: #D1ECF1;
+    color: #0c5460;
+}
+
+.vet-queue-empty {
+    text-align: center;
+    padding: 2rem;
+    color: #aaaaaa;
+    font-size: 0.9rem;
+}
+
+.vet-queue-empty i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* ---------- GRÁFICOS ---------- */
+.vet-chart-wrapper {
+    position: relative;
+    width: 100%;
+    height: 300px;
+}
+
+.vet-chart-wrapper canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.vet-chart-empty {
+    display: none;
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #aaaaaa;
+}
+
+.vet-chart-empty i {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+.vet-chart-empty p {
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+/* ---------- DONUT CENTER TEXT ---------- */
+.vet-donut-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+}
+
+.vet-donut-center-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #575252;
+    line-height: 1;
+}
+
+.vet-donut-center-label {
+    font-size: 0.7rem;
+    color: #94827F;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ---------- TABLA MÍNIMA ---------- */
+.vet-mini-table {
+    width: 100%;
+    font-size: 0.8rem;
+}
+
+.vet-mini-table thead th {
+    background: #F8F9FA;
+    color: #94827F;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.5px;
+    padding: 0.6rem 0.75rem;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.vet-mini-table tbody td {
+    padding: 0.6rem 0.75rem;
+    color: #2D2D2D;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+
+.vet-mini-table tbody tr:hover {
+    background: #F8F9FA;
+}
+
+/* ---------- UTILITIES ---------- */
+.vet-text-muted {
+    color: #94827F;
+}
+
+.vet-badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.vet-badge-pendiente {
+    background: #FFF3CD;
+    color: #856404;
+}
+
+.vet-badge-atencion {
+    background: #D1ECF1;
+    color: #0c5460;
+}
+
+.vet-badge-atendida {
+    background: #D7C8C1;
+    color: #575252;
+}
+
+.vet-loading-spinner {
+    text-align: center;
+    padding: 2rem;
+    color: #94827F;
+}
+
+.vet-loading-spinner i {
+    font-size: 1.5rem;
+    animation: vet-spin 1s linear infinite;
+}
+
+@keyframes vet-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}

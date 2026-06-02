@@ -1,0 +1,678 @@
+﻿@{
+    ViewData["Title"] = "Inicio - Recepcionista";
+    Layout = "~/Views/Shared/_LayoutRecepcionista.cshtml";
+    var nombre = Context.Session.GetString("NombreUsuario") ?? "Recepcionista";
+}
+
+<div class="container-fluid px-4">
+
+    <!-- Sección A: Bienvenida -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="rec-header-card p-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rec-welcome-icon">
+                        <i class="fas fa-hand-sparkles"></i>
+                    </div>
+                    <div class="rec-welcome-text">
+                        <h2>¡Hola, @nombre!</h2>
+                        <p class="mb-0">Aquí tienes un resumen completo de tu agenda.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección B: KPIs (4 cards) -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="kpi-card p-4">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="kpi-label">Citas Hoy</div>
+                        <div class="kpi-value">@ViewBag.CitasHoyCount</div>
+                        <span class="kpi-sub">Pendientes de atender</span>
+                    </div>
+                    <div class="kpi-icon" style="background:rgba(124,184,185,0.1);color:#7CB8B9;">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="kpi-card p-4">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="kpi-label">Tasa de Atención</div>
+                        <div class="kpi-value">@ViewBag.TasaAtencion%</div>
+                        <span class="kpi-sub">Últimos 30 días</span>
+                    </div>
+                    <div class="kpi-icon" style="background:rgba(148,130,127,0.1);color:#94827F;">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="kpi-card p-4">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="kpi-label">Ingresos del Mes</div>
+                        <div class="kpi-value">S/ @ViewBag.IngresosMes.ToString("N0")</div>
+                        <span class="kpi-sub">Citas atendidas</span>
+                    </div>
+                    <div class="kpi-icon" style="background:rgba(255,192,97,0.1);color:#FFC061;">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="kpi-card p-4">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="kpi-label">Mascotas Únicas</div>
+                        <div class="kpi-value">@ViewBag.MascotasUnicas</div>
+                        <span class="kpi-sub">Atendidas</span>
+                    </div>
+                    <div class="kpi-icon" style="background:rgba(148,130,127,0.1);color:#94827F;">
+                        <i class="fas fa-paw"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección C: Calendario + Próximas Citas -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="calendar-wrapper" id="calendarWrapper">
+                <div id="calendar"></div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="appointment-list">
+                <div class="appt-header">
+                    <h5><i class="fas fa-clock me-2" style="color:#94827F;"></i>Próximas Citas</h5>
+                    <span class="badge pill-badge">Hoy</span>
+                </div>
+                <div id="todayAppointments">
+                    <div class="text-center py-4" id="apptLoading">
+                        <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+                        <p class="text-muted small mb-0 mt-2">Cargando...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección D: Gráficos (fila 1 - Donas) -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h6><i class="fas fa-chart-pie me-2" style="color:#94827F;"></i>Distribución por Estado</h6>
+                </div>
+                <canvas id="statusChart" height="240"></canvas>
+                <div class="chart-empty" id="emptyStatus"><p class="mb-0">Sin datos</p></div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h6><i class="fas fa-paw me-2" style="color:#7CB8B9;"></i>Especies Atendidas</h6>
+                </div>
+                <canvas id="speciesChart" height="240"></canvas>
+                <div class="chart-empty" id="emptySpecies"><p class="mb-0">Sin datos</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección E: Gráficos (fila 2 - Barras) -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h6><i class="fas fa-chart-bar me-2" style="color:#7CB8B9;"></i>Citas por Día del Mes</h6>
+                </div>
+                <canvas id="dailyChart" height="240"></canvas>
+                <div class="chart-empty" id="emptyDaily"><p class="mb-0">Sin datos este mes</p></div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h6><i class="fas fa-chart-area me-2" style="color:#FFC061;"></i>Ingresos por Mes</h6>
+                </div>
+                <canvas id="incomeChart" height="240"></canvas>
+                <div class="chart-empty" id="emptyIncome"><p class="mb-0">Sin datos</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección F: Gráficos (fila 3 - Barras horizontales + Semana) -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h6><i class="fas fa-door-open me-2" style="color:#94827F;"></i>Consultorios Más Usados</h6>
+                </div>
+                <canvas id="consultorioChart" height="240"></canvas>
+                <div class="chart-empty" id="emptyConsultorio"><p class="mb-0">Sin datos</p></div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h6><i class="fas fa-calendar-week me-2" style="color:#7CB8B9;"></i>Días Más Ocupados</h6>
+                </div>
+                <canvas id="weekdayChart" height="240"></canvas>
+                <div class="chart-empty" id="emptyWeekday"><p class="mb-0">Sin datos</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección G: Últimas 5 Atenciones -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="mini-table">
+                <div class="mini-table-header">
+                    <h5><i class="fas fa-notes-medical me-2" style="color:#7CB8B9;"></i>Últimas Atenciones</h5>
+                    <a href="@Url.Action("CitasAtendidas", "Cita")" class="kpi-link" style="font-size:13px;color:#94827F;">
+                        Ver todas <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table" id="ultimasAtencionesTable">
+                        <thead>
+                            <tr>
+                                <th>Mascota</th>
+                                <th>Diagnóstico</th>
+                                <th>Monto</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ultimasAtencionesBody">
+                            <tr id="atencionesLoading">
+                                <td colspan="4" class="text-center py-3">
+                                    <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+                                    <span class="ms-2 text-muted small">Cargando...</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/locales/es.global.min.js"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // ==================== DATA FROM SERVER ====================
+        var todasCitas = @Html.Raw(ViewBag.TodasCitasJson);
+        var citasHoy = @Html.Raw(ViewBag.CitasHoyJson);
+        var ultimasAtenciones = @Html.Raw(ViewBag.UltimasAtencionesJson);
+        var pagosRealizados = @Html.Raw(ViewBag.PagosRealizadosJson);
+
+        if (!todasCitas) todasCitas = [];
+        if (!citasHoy) citasHoy = [];
+        if (!ultimasAtenciones) ultimasAtenciones = [];
+        if (!pagosRealizados) pagosRealizados = [];
+
+        // ==================== TODAY'S APPOINTMENTS LIST ====================
+        function renderTodayAppts() {
+            var container = document.getElementById('todayAppointments');
+            var loading = document.getElementById('apptLoading');
+            if (loading) loading.remove();
+
+            if (citasHoy.length === 0) {
+                container.innerHTML = '<div class="appointment-empty"><i class="fas fa-calendar-check fa-3x mb-3" style="color:#D7C8C1;"></i><p class="mb-0">No hay citas pendientes para hoy</p></div>';
+                return;
+            }
+
+            var html = '';
+            var maxShow = Math.min(citasHoy.length, 5);
+            for (var i = 0; i < maxShow; i++) {
+                var c = citasHoy[i];
+                var time = new Date(c.CalendarioCita).toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', hour12: true });
+                html += '<div class="appointment-item">' +
+                    '<span class="appt-time">' + time + '</span>' +
+                    '<span class="appt-icon"><i class="fas fa-paw" style="color:#94827F;"></i></span>' +
+                    '<div class="appt-info">' +
+                    '<div class="appt-pet">' + (c.NombreMascota || '---') + '</div>' +
+                    '<div class="appt-owner">' + (c.NombreVeterinario || '---') + '</div>' +
+                    '</div>' +
+                    '<span class="appt-consultorio">Cons. ' + c.Consultorio + '</span>' +
+                    '</div>';
+            }
+            container.innerHTML = html;
+        }
+
+        renderTodayAppts();
+
+        // ==================== FULLCALENDAR ====================
+        function getEventColor(estado) {
+            switch (estado) {
+                case 'P': return { bg: '#FFEF75', text: '#856404', border: '#FFEF75' };
+                case 'E': return { bg: '#C6EFFF', text: '#0C5460', border: '#C6EFFF' };
+                case 'A': return { bg: '#D7C8C1', text: '#575252', border: '#D7C8C1' };
+                case 'C': return { bg: '#F8D7DA', text: '#721C24', border: '#F8D7DA' };
+                default:  return { bg: '#E2E3E5', text: '#383D41', border: '#E2E3E5' };
+            }
+        }
+
+        function getEstadoNombre(estado) {
+            switch (estado) {
+                case 'P': return 'Pendiente';
+                case 'E': return 'En Atención';
+                case 'A': return 'Atendida';
+                case 'C': return 'Cancelada';
+                default: return estado;
+            }
+        }
+
+        var calendarEl = document.getElementById('calendar');
+        if (calendarEl && todasCitas.length > 0) {
+            var events = [];
+            for (var i = 0; i < todasCitas.length; i++) {
+                var c = todasCitas[i];
+                var d = new Date(c.CalendarioCita);
+                var colors = getEventColor(c.EstadoCita);
+                var timeStr = d.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', hour12: true });
+                events.push({
+                    id: c.IdCita,
+                    title: (c.NombreMascota || '---') + ' ' + timeStr,
+                    start: c.CalendarioCita,
+                    allDay: false,
+                    backgroundColor: colors.bg,
+                    textColor: colors.text,
+                    borderColor: colors.border,
+                    extendedProps: {
+                        estado: c.EstadoCita,
+                        estadoNombre: getEstadoNombre(c.EstadoCita),
+                        mascota: c.NombreMascota,
+                        veterinario: c.NombreVeterinario,
+                        consultorio: c.Consultorio,
+                        monto: c.MontoPago
+                    }
+                });
+            }
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'es',
+                firstDay: 1,
+                height: 'auto',
+                headerToolbar: {
+                    left: 'prev',
+                    center: 'title',
+                    right: 'next'
+                },
+                events: events,
+                eventDidMount: function(info) {
+                    info.el.style.borderRadius = '10px';
+                    info.el.style.padding = '2px 6px';
+                    info.el.style.fontSize = '11px';
+                    info.el.style.fontWeight = '600';
+                    info.el.style.border = 'none';
+                    info.el.style.margin = '1px 2px';
+                },
+                eventClick: function(info) {
+                    var e = info.event.extendedProps;
+                    var estadoBadge = '';
+                    switch (e.estado) {
+                        case 'P': estadoBadge = '<span class="badge" style="background:#FFEF75;color:#856404;">Pendiente</span>'; break;
+                        case 'E': estadoBadge = '<span class="badge" style="background:#C6EFFF;color:#0C5460;">En Atención</span>'; break;
+                        case 'A': estadoBadge = '<span class="badge" style="background:#D7C8C1;color:#575252;">Atendida</span>'; break;
+                        case 'C': estadoBadge = '<span class="badge" style="background:#F8D7DA;color:#721C24;">Cancelada</span>'; break;
+                    }
+                    Swal.fire({
+                        title: '<strong>' + (e.mascota || '---') + '</strong>',
+                        html: '<div class="text-start">' +
+                            '<p class="mb-1"><strong>Estado:</strong> ' + estadoBadge + '</p>' +
+                            '<p class="mb-1"><strong>Veterinario:</strong> ' + (e.veterinario || '---') + '</p>' +
+                            '<p class="mb-1"><strong>Consultorio:</strong> ' + e.consultorio + '</p>' +
+                            '<p class="mb-0"><strong>Monto:</strong> S/ ' + (e.monto || 0).toLocaleString('es-PE') + '</p>' +
+                            '</div>',
+                        icon: 'info',
+                        confirmButtonColor: '#574C52',
+                        confirmButtonText: 'Cerrar',
+                        background: '#FDFDFD',
+                        color: '#4C3726'
+                    });
+                },
+                dayCellDidMount: function(info) {
+                    info.el.style.borderRadius = '0';
+                }
+            });
+
+            calendar.render();
+        } else if (calendarEl) {
+            calendarEl.innerHTML = '<div class="text-center py-5 text-muted"><i class="fas fa-calendar fa-3x mb-3" style="color:#D7C8C1;"></i><p>No hay citas registradas</p></div>';
+        }
+
+        // ==================== CHARTS ====================
+        var chartColors = ['#94827F', '#7CB8B9', '#FFC061', '#D7C8C1', '#C6EFFF', '#FFEF75', '#A8D8D9'];
+        var chartDefaults = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 12,
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        font: { size: 11, family: 'Nunito' }
+                    }
+                }
+            }
+        };
+
+        // Helper: group by
+        function groupBy(arr, keyFn) {
+            var map = {};
+            for (var i = 0; i < arr.length; i++) {
+                var k = keyFn(arr[i]);
+                map[k] = (map[k] || 0) + 1;
+            }
+            return map;
+        }
+
+        function sumBy(arr, keyFn, valFn) {
+            var map = {};
+            for (var i = 0; i < arr.length; i++) {
+                var k = keyFn(arr[i]);
+                map[k] = (map[k] || 0) + valFn(arr[i]);
+            }
+            return map;
+        }
+
+        // 1. Status Donut
+        (function() {
+            var ctx = document.getElementById('statusChart');
+            if (!ctx) return;
+            var counts = groupBy(todasCitas, function(c) { return c.EstadoCita; });
+            var labels = [], data = [], colors = [];
+            var estadoMap = { 'P': 'Pendiente', 'E': 'En Atención', 'A': 'Atendida', 'C': 'Cancelada' };
+            var estadoColors = { 'P': '#FFC061', 'E': '#7CB8B9', 'A': '#94827F', 'C': '#D7C8C1' };
+            var hasData = false;
+            for (var k in estadoMap) {
+                if (counts[k] && counts[k] > 0) {
+                    hasData = true;
+                    labels.push(estadoMap[k]);
+                    data.push(counts[k]);
+                    colors.push(estadoColors[k]);
+                }
+            }
+            if (!hasData) {
+                document.getElementById('emptyStatus').style.display = 'block';
+                ctx.style.display = 'none';
+                return;
+            }
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderWidth: 0 }] },
+                options: Object.assign({}, chartDefaults, {
+                    cutout: '72%',
+                    layout: { padding: { top: 10, right: 20, bottom: 30, left: 10 } }
+                })
+            });
+        })();
+
+        // 2. Species Donut
+        (function() {
+            var ctx = document.getElementById('speciesChart');
+            if (!ctx) return;
+            var atendidas = todasCitas.filter(function(c) { return c.EstadoCita === 'A'; });
+            if (atendidas.length === 0) {
+                document.getElementById('emptySpecies').style.display = 'block';
+                ctx.style.display = 'none';
+                return;
+            }
+            var counts = groupBy(atendidas, function(c) { return c.NombreMascota ? c.NombreMascota.split(' ')[0] : '---'; });
+            var entries = Object.entries(counts).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 8);
+            var labels = entries.map(function(e) { return e[0]; });
+            var data = entries.map(function(e) { return e[1]; });
+            var bgColors = labels.map(function(_, i) { return chartColors[i % chartColors.length]; });
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: { labels: labels, datasets: [{ data: data, backgroundColor: bgColors, borderWidth: 0 }] },
+                options: Object.assign({}, chartDefaults, {
+                    cutout: '70%',
+                    layout: { padding: { top: 10, right: 20, bottom: 30, left: 10 } }
+                })
+            });
+        })();
+
+        // 3. Daily Bar (citas by day of current month)
+        (function() {
+            var ctx = document.getElementById('dailyChart');
+            if (!ctx) return;
+            var now = new Date();
+            var year = now.getFullYear();
+            var month = now.getMonth();
+            var daysInMonth = new Date(year, month + 1, 0).getDate();
+            var citasMes = todasCitas.filter(function(c) {
+                var d = new Date(c.CalendarioCita);
+                return d.getFullYear() === year && d.getMonth() === month;
+            });
+            if (citasMes.length === 0) {
+                document.getElementById('emptyDaily').style.display = 'block';
+                ctx.style.display = 'none';
+                return;
+            }
+            var counts = groupBy(citasMes, function(c) { return new Date(c.CalendarioCita).getDate(); });
+            var labels = [], data = [];
+            for (var d = 1; d <= daysInMonth; d++) {
+                labels.push(String(d));
+                data.push(counts[d] || 0);
+            }
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Citas',
+                        data: data,
+                        backgroundColor: '#7CB8B9',
+                        borderRadius: 8,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: { padding: { top: 10, right: 20, bottom: 30, left: 10 } },
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { stepSize: 1, font: { size: 11, family: 'Nunito' } } },
+                        x: { grid: { display: false }, ticks: { font: { size: 10, family: 'Nunito' } } }
+                    }
+                }
+            });
+        })();
+
+        // 4. Income Line (monthly for last 6 months) — basado en pagos realizados
+        (function() {
+            var ctx = document.getElementById('incomeChart');
+            if (!ctx) return;
+            var pagos = pagosRealizados || [];
+            var monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            var now = new Date();
+            var labels = [], data = [];
+            var hasData = false;
+            for (var i = 5; i >= 0; i--) {
+                var m = (now.getMonth() - i + 12) % 12;
+                var y = now.getFullYear() + (now.getMonth() - i < 0 ? -1 : 0) + (now.getMonth() - i >= 12 ? 1 : 0);
+                var total = 0;
+                for (var j = 0; j < pagos.length; j++) {
+                    var d = new Date(pagos[j].HoraPago);
+                    if (d.getFullYear() === y && d.getMonth() === m) {
+                        total += pagos[j].MontoPago;
+                    }
+                }
+                labels.push(monthNames[m]);
+                data.push(total);
+                if (total > 0) hasData = true;
+            }
+            if (!hasData) {
+                document.getElementById('emptyIncome').style.display = 'block';
+                ctx.style.display = 'none';
+                return;
+            }
+            var gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 240);
+            gradient.addColorStop(0, 'rgba(255,192,97,0.3)');
+            gradient.addColorStop(1, 'rgba(255,192,97,0.0)');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Ingresos (S/)',
+                        data: data,
+                        borderColor: '#FFC061',
+                        backgroundColor: gradient,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#FFC061',
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: { padding: { top: 10, right: 20, bottom: 30, left: 10 } },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) { return 'S/ ' + ctx.raw.toLocaleString('es-PE'); }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 11, family: 'Nunito' } } },
+                        x: { grid: { display: false }, ticks: { font: { size: 11, family: 'Nunito' } } }
+                    }
+                }
+            });
+        })();
+
+        // 5. Consultorios Horizontal Bar
+        (function() {
+            var ctx = document.getElementById('consultorioChart');
+            if (!ctx) return;
+            var counts = groupBy(todasCitas, function(c) { return 'Cons. ' + c.Consultorio; });
+            var entries = Object.entries(counts).sort(function(a, b) { return b[1] - a[1]; });
+            if (entries.length === 0) {
+                document.getElementById('emptyConsultorio').style.display = 'block';
+                ctx.style.display = 'none';
+                return;
+            }
+            var labels = entries.map(function(e) { return e[0]; });
+            var data = entries.map(function(e) { return e[1]; });
+            var bgColors = labels.map(function(_, i) { return chartColors[i % chartColors.length]; });
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Citas',
+                        data: data,
+                        backgroundColor: bgColors,
+                        borderRadius: 8,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: { padding: { top: 10, right: 20, bottom: 30, left: 10 } },
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { stepSize: 1, font: { size: 11, family: 'Nunito' } } },
+                        y: { grid: { display: false }, ticks: { font: { size: 11, family: 'Nunito' } } }
+                    }
+                }
+            });
+        })();
+
+        // 6. Weekday Bar
+        (function() {
+            var ctx = document.getElementById('weekdayChart');
+            if (!ctx) return;
+            var dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+            var counts = [0, 0, 0, 0, 0, 0, 0];
+            for (var i = 0; i < todasCitas.length; i++) {
+                var d = new Date(todasCitas[i].CalendarioCita);
+                counts[d.getDay()]++;
+            }
+            var hasData = counts.some(function(v) { return v > 0; });
+            if (!hasData) {
+                document.getElementById('emptyWeekday').style.display = 'block';
+                ctx.style.display = 'none';
+                return;
+            }
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: dayNames,
+                    datasets: [{
+                        label: 'Citas',
+                        data: counts,
+                        backgroundColor: ['#94827F', '#7CB8B9', '#FFC061', '#D7C8C1', '#C6EFFF', '#FFEF75', '#A8D8D9'],
+                        borderRadius: 8,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: { padding: { top: 10, right: 20, bottom: 30, left: 10 } },
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { stepSize: 1, font: { size: 11, family: 'Nunito' } } },
+                        x: { grid: { display: false }, ticks: { font: { size: 11, family: 'Nunito' } } }
+                    }
+                }
+            });
+        })();
+
+        // 7. Últimas Atenciones Table
+        (function() {
+            var tbody = document.getElementById('ultimasAtencionesBody');
+            var loading = document.getElementById('atencionesLoading');
+            if (loading) loading.remove();
+
+            if (!ultimasAtenciones || ultimasAtenciones.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-3 text-muted">No hay atenciones registradas</td></tr>';
+                return;
+            }
+
+            var html = '';
+            for (var i = 0; i < ultimasAtenciones.length; i++) {
+                var c = ultimasAtenciones[i];
+                var fecha = new Date(c.CalendarioCita).toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' });
+                html += '<tr>' +
+                    '<td><strong>' + (c.NombreMascota || '---') + '</strong></td>' +
+                    '<td class="text-muted">Atendida</td>' +
+                    '<td>S/ ' + (c.MontoPago || 0).toLocaleString('es-PE') + '</td>' +
+                    '<td>' + fecha + '</td>' +
+                    '</tr>';
+            }
+            tbody.innerHTML = html;
+        })();
+
+    });
+    </script>
+}

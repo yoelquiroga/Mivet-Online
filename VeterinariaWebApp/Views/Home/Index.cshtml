@@ -1,0 +1,257 @@
+@{
+    ViewData["Title"] = "Inicio";
+    Layout = "~/Views/Shared/_LayoutHome.cshtml";
+}
+
+<!-- HERO / BANNER -->
+<section class="hero" id="hero">
+    <div class="hero-overlay">
+        <h1>Cuidamos a tu mascota.</h1>
+        <h2>Tú solo reserva tu cita.</h2>
+        <p>
+            En Mivet Online agenda citas veterinarias en segundos. Limpiezas, análisis, radiografías, baños,
+            desparasitaciones y asesoría nutricional, todo gestionado desde tu dispositivo.
+        </p>
+        @if (ViewBag.IsLoggedIn == true)
+        {
+            <a href="@Url.Action("Crear", "Pago")" class="hero-btn">Reservar cita ahora</a>
+        }
+        else
+        {
+            <a href="@Url.Action("Index", "Login")" class="hero-btn">Reservar cita ahora</a>
+        }
+    </div>
+</section>
+
+<!-- SERVICES SECTION -->
+<section class="services-section" id="servicios">
+    <!-- Floating title -->
+    <div class="services-title-wrap">
+        <div class="services-title">
+            <img src="~/img/icons/pataservicio.png" alt=""
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';" />
+            <span style="display:none;font-size:32px;">🐾</span>
+            <h2>Nuestros Servicios</h2>
+        </div>
+    </div>
+
+    <!-- Decorative icons -->
+    <div class="deco-icon" style="top:10%;left:2%;width:55px;opacity:0.12;transform:rotate(-15deg);">
+        <img src="~/img/icons/patas.png" alt=""
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:55px;">🐾</span>
+    </div>
+    <div class="deco-icon" style="top:4%;left:42%;width:42px;opacity:0.14;transform:rotate(20deg);">
+        <img src="~/img/icons/hueso.png" alt=""
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:42px;">🦴</span>
+    </div>
+    <div class="deco-icon" style="top:18%;right:3%;width:50px;opacity:0.10;transform:rotate(-25deg);">
+        <img src="~/img/icons/patas.png" alt=""
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:50px;">🐾</span>
+    </div>
+    <div class="deco-icon" style="top:38%;left:1%;width:40px;opacity:0.18;transform:rotate(40deg);">
+        <img src="~/img/icons/hueso.png" alt=""
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:40px;">🦴</span>
+    </div>
+    <div class="deco-icon" style="top:50%;left:48%;width:48px;opacity:0.11;transform:rotate(-35deg);">
+        <img src="~/img/icons/patas.png" alt=""
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:48px;">🐾</span>
+    </div>
+    <div class="deco-icon" style="bottom:25%;left:5%;width:45px;opacity:0.15;transform:rotate(15deg);">
+        <img src="~/img/icons/patas.png" alt=""
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:45px;">🐾</span>
+    </div>
+    <div class="deco-icon" style="bottom:18%;left:38%;width:38px;opacity:0.13;transform:rotate(-10deg);">
+        <img src="~/img/icons/hueso.png" alt=""
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:38px;">🦴</span>
+    </div>
+    <div class="deco-icon" style="bottom:30%;right:5%;width:44px;opacity:0.12;transform:rotate(30deg);">
+        <img src="~/img/icons/hueso.png" alt=""
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:44px;">🦴</span>
+    </div>
+
+    <!-- Cards -->
+    <div class="services-grid">
+        <div class="service-card card-1">
+            <div class="card-icon">
+                <img src="~/img/icons/estetoscopio.png" alt=""
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                <span class="icon-fallback" style="display:none;">🩺</span>
+            </div>
+            <h3>Consulta y Diagnóstico</h3>
+            <p>Evaluación clínica completa, análisis de laboratorio y radiografías para un diagnóstico preciso y oportuno.</p>
+        </div>
+
+        <div class="service-card card-2">
+            <div class="card-icon">
+                <img src="~/img/icons/medicina.png" alt=""
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                <span class="icon-fallback" style="display:none;">💊</span>
+            </div>
+            <h3>Medicina Preventiva</h3>
+            <p>Vacunación, desparasitaciones internas y externas, y chequeos periódicos para mantener a tu mascota siempre sana.</p>
+        </div>
+
+        <div class="service-card card-3">
+            <div class="card-icon">
+                <img src="~/img/icons/bano.png" alt=""
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                <span class="icon-fallback" style="display:none;">🛁</span>
+            </div>
+            <h3>Estética y Bienestar</h3>
+            <p>Baños terapéuticos, cortes, limpieza de oídos y cuidados de piel adaptados a la raza y edad de tu mascota.</p>
+        </div>
+
+        <div class="service-card card-4">
+            <div class="card-icon">
+                <img src="~/img/icons/comida.png" alt=""
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                <span class="icon-fallback" style="display:none;">🍽️</span>
+            </div>
+            <h3>Nutrición y Asesoría</h3>
+            <p>Recomendaciones personalizadas en alimentación, suplementos y control de peso. (Venta exclusiva en clínica o canales autorizados).</p>
+        </div>
+    </div>
+</section>
+
+<!-- NOSOTROS SECTION -->
+<section class="about-section" id="nosotros">
+    <div class="about-container">
+        <div class="about-content">
+            <h2 class="about-title">
+                <span>Sobre </span>
+                <span>Nosotros</span>
+            </h2>
+            <p class="about-description">
+                Somos un equipo de profesionales veterinarios y amantes de los animales comprometidos con el bienestar integral de tu mascota. Nacimos para simplificar el cuidado veterinario: sin filas, sin esperas innecesarias y con seguimiento personalizado. Con Mivet Online puedes gestionar citas, acceder a atención especializada y recibir orientación profesional, todo desde tu celular o computadora. Porque tu mejor amigo merece lo mejor, y tú mereces tranquilidad.
+            </p>
+        </div>
+        <div class="about-image-slider">
+            <img src="https://res.cloudinary.com/dwkhnxmbz/image/upload/v1779857094/Vet_Union_ah7m1p.jpg" class="slider-img active" alt="Veterinario con perro">
+            <img src="https://res.cloudinary.com/dwkhnxmbz/image/upload/v1779875119/Canine_Fitness_Month_obs5xx.jpg" class="slider-img" alt="Canine Fitness">
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const imgs = document.querySelectorAll('.about-image-slider .slider-img');
+            if (imgs.length < 2) return;
+            let current = 0;
+            setInterval(function () {
+                imgs[current].classList.remove('active');
+                current = (current + 1) % imgs.length;
+                imgs[current].classList.add('active');
+            }, 4000);
+        });
+    </script>
+    <div class="about-badges">
+        <span class="about-badge">Citas confirmadas en minutos</span>
+        <span class="about-badge">Profesionales certificados</span>
+        <span class="about-badge">Atención 100% con reserva previa</span>
+    </div>
+</section>
+
+<!-- CONTACT SECTION -->
+<section class="contact-section" id="contacto">
+    <div class="contact-container">
+        <div class="contact-info">
+            <div class="contact-label">
+                <div class="contact-line"></div>
+                <span class="contact-label-text">Contacto</span>
+            </div>
+            <h2 class="contact-title">
+                <span>¿Listo para agendar?</span><br>
+                <span>Contáctanos</span>
+            </h2>
+            <div class="contact-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <div>
+                    <span class="contact-item-label">Dirección:</span>
+                    <span class="contact-item-text">Ejército 391, MIRAFLORES, 222-1478 Perú, Lima</span>
+                </div>
+            </div>
+            <div class="contact-item">
+                <i class="far fa-clock"></i>
+                <div>
+                    <span class="contact-item-label">Horario de atención:</span>
+                    <span class="contact-item-text">Lunes a Viernes: 9:00 AM - 7:00 PM</span>
+                    <span class="contact-item-text">Sábados: 9:00 AM - 2:00 PM</span>
+                </div>
+            </div>
+            <div class="contact-item">
+                <i class="fas fa-phone"></i>
+                <div>
+                    <span class="contact-item-label">Teléfono</span>
+                    <span class="contact-item-text">+51 963258852</span>
+                </div>
+            </div>
+            <div class="contact-item">
+                <i class="far fa-envelope"></i>
+                <div>
+                    <span class="contact-item-label">Email:</span>
+                    <span class="contact-item-text">contactomivetonline@gmail.com</span>
+                </div>
+            </div>
+        </div>
+        <div class="contact-form-wrapper">
+            <form class="contact-form" id="contactForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="nom_con">Nombres</label>
+                        <input type="text" id="nom_con" name="nom_con" class="form-input" placeholder="Ingrese su nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="ape_con">Apellidos</label>
+                        <input type="text" id="ape_con" name="ape_con" class="form-input" placeholder="Ingrese sus apellidos" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label class="form-label" for="email_con">Correo electrónico</label>
+                        <input type="email" id="email_con" name="email_con" class="form-input" placeholder="ejemplo@correo.com" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="servicio_con">Servicios</label>
+                        <div class="select-wrapper">
+                            <select id="servicio_con" name="servicio_con" class="form-select">
+                                <option value="">Seleccione un servicio</option>
+                                <option value="Consulta y Diagnóstico">Consulta y Diagnóstico</option>
+                                <option value="Medicina Preventiva">Medicina Preventiva</option>
+                                <option value="Estética y Bienestar">Estética y Bienestar</option>
+                                <option value="Nutrición y Asesoría">Nutrición y Asesoría</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="telefono_con">Teléfono</label>
+                        <input type="tel" id="telefono_con" name="telefono_con" class="form-input" placeholder="999888777" pattern="[9][0-9]{8}" maxlength="9" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label class="form-label" for="mensaje_con">Mensaje</label>
+                        <textarea id="mensaje_con" name="mensaje_con" class="form-input form-textarea" rows="4" placeholder="Escriba su mensaje aquí..."></textarea>
+                    </div>
+                </div>
+                <div class="submit-button-container">
+                    <button type="submit" class="submit-button">
+                        Enviar mensaje
+                    </button>
+                    <div class="button-circle">
+                        <span class="arrow-icon">→</span>
+                    </div>
+                </div>
+            </form>
+            <img src="https://res.cloudinary.com/dwkhnxmbz/image/upload/v1779858131/Download_premium_png_of_PNG_Orange_kitty_paw_up_mammal_animal_kitten__by_Saveshitz_about_cat_paw__kitty_cat__kitty_png__kitty__and_cat_14564154-removebg-preview_upvvut.png" alt="" class="cat-image">
+        </div>
+    </div>
+</section>

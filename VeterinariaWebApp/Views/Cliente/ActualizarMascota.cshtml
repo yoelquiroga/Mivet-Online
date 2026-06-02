@@ -1,0 +1,149 @@
+@model VeterinariaWebApp.Models.Mascota.Mascota
+
+@{
+    ViewData["Title"] = "Editar Mascota";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+    var clienteId = Context.Session.GetInt32("ClienteId");
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_green.css">
+
+<div class="container-fluid">
+
+    <div class="mb-3">
+                            <a asp-action="listaMascotasPorCliente"
+           class="edit-back-link">
+            <i class="fas fa-arrow-left"></i> Volver al listado
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+            <div class="edit-form-card">
+                <div class="card-header edit-header-gradient py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="icon-circle-edit">
+                            <i class="fas fa-paw fa-lg"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0 fw-bold">Editando: @Model.Nombre</h5>
+                            <small>Modifique los datos que desee actualizar</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="edit-form-body">
+                    @if (!string.IsNullOrEmpty(ViewBag.Mensaje))
+                    {
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>@ViewBag.Mensaje
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <form asp-action="ActualizarMascota" method="post" id="formActualizar">
+                        <input asp-for="IdMascota" type="hidden" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="edit-form-grid">
+                            <div class="form-field-card full-width">
+                                <label asp-for="Nombre" class="form-label">
+                                    <i class="fas fa-tag"></i> Nombre de la Mascota
+                                </label>
+                                <input asp-for="Nombre" class="form-control"
+                                       placeholder="Nombre de la mascota" maxlength="50" />
+                                <span asp-validation-for="Nombre" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-field-card">
+                                <label asp-for="Especie" class="form-label">
+                                    <i class="fas fa-paw"></i> Especie
+                                </label>
+                                <select asp-for="Especie" class="form-select" id="selectEspecie">
+                                    <option value="">Seleccione una especie</option>
+                                    <option value="Perro" @@(Model.Especie == "Perro" ? "selected" : "")>Perro</option>
+                                    <option value="Gato" @@(Model.Especie == "Gato" ? "selected" : "")>Gato</option>
+                                    <option value="Ave" @@(Model.Especie == "Ave" ? "selected" : "")>Ave</option>
+                                    <option value="Conejo" @@(Model.Especie == "Conejo" ? "selected" : "")>Conejo</option>
+                                    <option value="Hamster" @@(Model.Especie == "Hamster" ? "selected" : "")>Hámster</option>
+                                    <option value="Pez" @@(Model.Especie == "Pez" ? "selected" : "")>Pez</option>
+                                    <option value="Tortuga" @@(Model.Especie == "Tortuga" ? "selected" : "")>Tortuga</option>
+                                    <option value="Otro" @@(Model.Especie == "Otro" ? "selected" : "")>Otro</option>
+                                </select>
+                                <span asp-validation-for="Especie" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-field-card">
+                                <label asp-for="Raza" class="form-label">
+                                    <i class="fas fa-dna"></i> Raza
+                                </label>
+                                <input asp-for="Raza" class="form-control"
+                                       placeholder="Raza de la mascota" maxlength="50" />
+                                <span asp-validation-for="Raza" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-field-card">
+                                <label asp-for="FechaNacimiento" class="form-label">
+                                    <i class="fas fa-birthday-cake"></i> Fecha de Nacimiento
+                                </label>
+                                <input asp-for="FechaNacimiento" type="text" class="form-control datepicker"
+                                       id="fechaNacimiento" placeholder="Seleccione la fecha" readonly />
+                                <span asp-validation-for="FechaNacimiento" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-light border-warning mt-3 mb-0">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-info-circle text-warning me-2 fa-lg"></i>
+                                <div>
+                                    <strong>ID de Mascota:</strong> #@Model.IdMascota
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="edit-form-footer mt-3">
+        <a asp-action="listaMascotasPorCliente"
+                               class="btn-cancel-edit">
+                                <i class="fas fa-times me-1"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn-save-gradient" id="btnActualizar">
+                                <i class="fas fa-save me-1"></i> Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const fechaActual = '@Model.FechaNacimiento.ToString("yyyy-MM-dd")';
+
+            flatpickr("#fechaNacimiento", {
+                locale: "es",
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "d \\de F \\de Y",
+                minDate: "1990-01-01",
+                maxDate: "today",
+                defaultDate: fechaActual,
+                disableMobile: false,
+                monthSelectorType: "dropdown",
+                animate: true
+            });
+
+            document.getElementById('formActualizar').addEventListener('submit', function(e) {
+                document.getElementById('btnActualizar').innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Guardando...';
+                document.getElementById('btnActualizar').disabled = true;
+            });
+        });
+    </script>
+}

@@ -1,0 +1,228 @@
+﻿@{
+    var clienteId = Context.Session.GetInt32("ClienteId");
+    var nombreCliente = Context.Session.GetString("NombreCliente") ?? "Cliente";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="MiVet Online - Sistema de Gestión Veterinaria" />
+    <meta name="author" content="MiVet" />
+
+    <title>MiVet Online - Cliente</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+
+    <link href="~/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
+
+    <link href="~/css/sb-admin-2.min.css" rel="stylesheet" />
+    <link href="~/css/dashboard-styles.css" rel="stylesheet" />
+    <link href="~/css/cliente-styles.css" rel="stylesheet" />
+    <link href="~/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css" rel="stylesheet" />
+</head>
+
+<body id="page-top">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="@Url.Action("Index", "Cliente")">
+                <div class="sidebar-brand-icon">
+                    <img src="~/img/icons/logodashboard.png" alt="Mivet Online" class="sidebar-logo-img sidebar-logo-expanded">
+                    <img src="~/img/pataslogo.png" alt="Mivet Online" class="sidebar-logo-img sidebar-logo-collapsed">
+                </div>
+            </a>
+
+            <hr class="sidebar-divider my-0" />
+
+            <li class="nav-item active">
+                <a class="nav-link" href="@Url.Action("Index", "Cliente")">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <hr class="sidebar-divider" />
+
+            <div class="sidebar-heading">Gestión de Citas:</div>
+
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("listaCitaPorCliente", "Cliente")">
+                    <i class="fas fa-fw fa-calendar-check"></i>
+                    <span>Mis Citas</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("listaMascotasPorCliente", "Cliente")">
+                    <i class="fas fa-fw fa-dog"></i>
+                    <span>Mis Mascotas</span>
+                </a>
+            </li>
+
+            <hr class="sidebar-divider" />
+
+            <div class="sidebar-heading">Gestión de Pagos:</div>
+
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("PagosCliente", "Pago")">
+                    <i class="fas fa-fw fa-credit-card"></i>
+                    <span>Mis Pagos</span>
+                </a>
+            </li>
+
+            <hr class="sidebar-divider" />
+
+            <div class="sidebar-heading">Mi Cuenta:</div>
+
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Perfil", "Cliente")">
+                    <i class="fas fa-fw fa-user-cog"></i>
+                    <span>Mi Perfil</span>
+                </a>
+            </li>
+
+            <hr class="sidebar-divider d-none d-md-block" />
+
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+        </ul>
+        <!-- End Sidebar -->
+
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light topbar mb-4 static-top dashboard-header">
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+                    <div class="dashboard-header-center">
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-back-site">
+                            <i class="fas fa-arrow-left mr-1"></i>Volver al Sitio
+                        </a>
+                    </div>
+
+                    <ul class="navbar-nav ml-auto">
+                        <!-- Saludo personalizado -->
+                        <li class="nav-item d-none d-sm-flex align-items-center mr-3">
+                            <span class="text-gray-600 small">
+                                <i class="fas fa-hand-sparkles mr-1"></i>¡Hola, <strong>@nombreCliente</strong>!
+                            </span>
+                        </li>
+
+                        <div class="topbar-divider d-none d-sm-block"></div>
+
+                        <!-- User Dropdown -->
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          
+                                <img class="img-profile rounded-circle" src="~/img/undraw_profile.svg">
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="@Url.Action("Perfil", "Cliente")">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Mi Perfil
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" id="btnLogoutCliente">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Cerrar sesión
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+                <!-- End Topbar -->
+
+                <div class="container-fluid">
+                    @RenderBody()
+                </div>
+            </div>
+
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        MiVet Online &copy; <span id="year"></span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+
+
+    <script>
+        const currentYear = new Date().getFullYear();
+        document.getElementById('year').textContent = currentYear;
+    </script>
+
+    <script src="~/vendor/jquery/jquery.min.js"></script>
+    <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="~/js/sb-admin-2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/locales/es.js"></script>
+    <script src="~/vendor/chart.js/Chart.min.js"></script>
+    <script src="~/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src="~/js/demo/datatables-demo.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        @if (TempData["Exito"] != null)
+        {
+            <text>
+            Swal.fire({ icon: 'success', title: 'Éxito', text: @Json.Serialize(TempData["Exito"]), toast: true, position: 'top-end', showConfirmButton: false, timer: 4000, timerProgressBar: true });
+            </text>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <text>
+            Swal.fire({ icon: 'error', title: 'Error', text: @Json.Serialize(TempData["Error"]), toast: true, position: 'top-end', showConfirmButton: false, timer: 5000, timerProgressBar: true });
+            </text>
+        }
+        function showToast(message, type) {
+            const icons = { success: 'success', error: 'error', info: 'info', warning: 'warning' };
+            Swal.fire({ icon: icons[type] || 'info', text: message, toast: true, position: 'top-end', showConfirmButton: false, timer: 4000, timerProgressBar: true });
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+            var btn = document.getElementById('btnLogoutCliente');
+            if (btn) {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: '¿Cerrar sesión?',
+                        text: '¿Estás seguro de que deseas salir de tu cuenta?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#574C52',
+                        cancelButtonColor: '#94827F',
+                        confirmButtonText: 'Sí, cerrar sesión',
+                        cancelButtonText: 'Cancelar',
+                        background: '#FDFDFD',
+                        color: '#4C3726',
+                        iconColor: '#D7C8C1'
+                    }).then(function (result) {
+                        if (result.isConfirmed) {
+                            window.location.href = '@Url.Action("CerrarSesion", "Cliente")';
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
+
+

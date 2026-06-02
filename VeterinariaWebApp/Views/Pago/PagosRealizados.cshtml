@@ -1,0 +1,57 @@
+﻿@model IEnumerable<VeterinariaWebApp.Models.Pago.Pago>
+
+@{
+    ViewData["Title"] = "Pagos Realizados";
+    Layout = "~/Views/Shared/_LayoutRecepcionista.cshtml";
+}
+
+
+<h1>Pagos Realizados</h1>
+<hr>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Listado de Pagos con Cita Asociada</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>@Html.DisplayNameFor(model => model.IdPago)</th>
+                        <th>@Html.DisplayNameFor(model => model.HoraPago)</th>
+                        <th>@Html.DisplayNameFor(model => model.MontoPago)</th>
+                        <th>@Html.DisplayNameFor(model => model.TipoPago)</th>
+                        <th>@Html.DisplayNameFor(model => model.NombreCliente)</th>
+                        <th>@Html.DisplayNameFor(model => model.CorreoCliente)</th>
+                        <th>@Html.DisplayNameFor(model => model.EstadoPago)</th>
+                        <th>ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.IdPago)</td>
+                            <td>@Html.DisplayFor(modelItem => item.HoraPago)</td>
+                            <td>@Html.DisplayFor(modelItem => item.MontoPago)</td>
+                            <td>@Html.DisplayFor(modelItem => item.TipoPago)</td>
+                            <td>@Html.DisplayFor(modelItem => item.NombreCliente)</td>
+                            <td>@Html.DisplayFor(modelItem => item.CorreoCliente)</td>
+                            <td><span class="badge bg-success">Realizado</span></td>
+                            <td>
+                                <a href="@Url.Action("DetallePago", "Pago", new { id = item.IdPago, origen = "PagosRealizados" })" class="btn btn-info btn-sm me-1">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="@Url.Action("DetallePagoPDF", "Pago", new { id = item.IdPago })" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-file-pdf"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+

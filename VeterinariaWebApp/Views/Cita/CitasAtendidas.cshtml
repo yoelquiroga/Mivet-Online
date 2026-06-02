@@ -1,0 +1,45 @@
+﻿@model IEnumerable<VeterinariaWebApp.Models.Cita.Cita>
+
+@{
+    ViewData["Title"] = "Citas Atendidas";
+    Layout = "~/Views/Shared/_LayoutRecepcionista.cshtml";
+}
+
+<h1>Citas Atendidas</h1>
+<hr>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>@Html.DisplayNameFor(model => model.IdCita)</th>
+                        <th>@Html.DisplayNameFor(model => model.CalendarioCita)</th>
+                        <th>@Html.DisplayNameFor(model => model.Consultorio)</th>
+                        <th>@Html.DisplayNameFor(model => model.NombreVeterinario)</th>
+                        <th>@Html.DisplayNameFor(model => model.NombreMascota)</th>
+                        <th>@Html.DisplayNameFor(model => model.MontoPago)</th>
+                        <th>@Html.DisplayNameFor(model => model.EstadoCita)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.IdCita)</td>
+                            <td>@Html.DisplayFor(modelItem => item.CalendarioCita)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Consultorio)</td>
+                            <td>@Html.DisplayFor(modelItem => item.NombreVeterinario)</td>
+                            <td>@Html.DisplayFor(modelItem => item.NombreMascota)</td>
+                            <td>@Html.DisplayFor(modelItem => item.MontoPago)</td>
+                            <td>
+                                <span class="badge badge-pill badge-success">@item.EstadoDescripcion</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

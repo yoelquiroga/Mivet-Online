@@ -1,0 +1,152 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+/* ===== MI VET ONLINE - ESTILOS MODERNOS ===== */
+
+:root {
+  --vet-green: #28a745;
+  --vet-green-dark: #1e7e34;
+  --vet-green-light: #a7f5b8;
+  --vet-bg: #f0faf3;
+  --card-shadow: 0 4px 16px rgba(40, 167, 69, 0.12);
+  --card-radius: 0.75rem;
+  --input-radius: 0.5rem;
+}
+
+/* Cards con sombra suave */
+.card {
+  border: none;
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 28px rgba(40, 167, 69, 0.18);
+  transform: translateY(-2px);
+}
+
+/* Inputs y selects */
+.form-control, .form-select {
+  border-radius: var(--input-radius);
+  border: 1.5px solid #d4edda;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--vet-green);
+  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.2);
+}
+
+/* Botones con sombra */
+.btn {
+  border-radius: var(--input-radius);
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--vet-green-dark), var(--vet-green));
+  border: none;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(40, 167, 69, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-danger {
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.25);
+}
+
+.btn-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(220, 53, 69, 0.35);
+}
+
+/* Hover en filas de tabla */
+.table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+  background-color: #e8f8ec !important;
+  cursor: pointer;
+}
+
+/* Badges con estilo */
+.badge {
+  font-weight: 600;
+  padding: 0.35em 0.65em;
+  border-radius: 0.375rem;
+}
+
+/* Loading spinner en botones */
+.btn-loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.btn-loading::after {
+  content: "";
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  top: calc(50% - 0.5rem);
+  left: calc(50% - 0.5rem);
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+.btn-loading .btn-text {
+  visibility: hidden;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Dashboard stat cards */
+.stat-card {
+  border-left: 4px solid var(--vet-green);
+  border-radius: var(--card-radius);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 28px rgba(40, 167, 69, 0.2);
+}
+
+/* Modal personalizado */
+.modal-custom .modal-content {
+  border-radius: var(--card-radius);
+  border: 2px solid var(--vet-green-light);
+}

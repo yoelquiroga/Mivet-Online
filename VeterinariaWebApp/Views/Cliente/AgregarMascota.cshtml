@@ -1,0 +1,154 @@
+@model VeterinariaWebApp.Models.Mascota.Mascota
+
+@{
+    ViewData["Title"] = "Registrar Mascota";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_green.css">
+
+<div class="container-fluid">
+
+    <div class="mb-3">
+                            <a asp-action="listaMascotasPorCliente"
+           class="edit-back-link">
+            <i class="fas fa-arrow-left"></i> Volver al listado
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+            <div class="edit-form-card">
+                <div class="card-header create-header-gradient py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="icon-circle-create">
+                            <i class="fas fa-paw fa-lg"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0 fw-bold">Nueva Mascota</h5>
+                            <small>Complete los datos de su mascota</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="edit-form-body">
+                    <form asp-action="AgregarMascota" method="post" id="formMascota">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="edit-form-grid">
+                            <div class="form-field-card full-width">
+                                <label asp-for="Nombre" class="form-label">
+                                    <i class="fas fa-tag"></i> Nombre de la Mascota
+                                </label>
+                                <input asp-for="Nombre" class="form-control"
+                                       placeholder="Ej: Max, Luna, Rocky..." maxlength="50" />
+                                <span asp-validation-for="Nombre" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-field-card">
+                                <label asp-for="Especie" class="form-label">
+                                    <i class="fas fa-paw"></i> Especie
+                                </label>
+                                <select asp-for="Especie" class="form-select" id="selectEspecie">
+                                    <option value="">Seleccione una especie</option>
+                                    <option value="Perro">Perro</option>
+                                    <option value="Gato">Gato</option>
+                                    <option value="Ave">Ave</option>
+                                    <option value="Conejo">Conejo</option>
+                                    <option value="Hamster">Hámster</option>
+                                    <option value="Pez">Pez</option>
+                                    <option value="Tortuga">Tortuga</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                                <span asp-validation-for="Especie" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-field-card">
+                                <label asp-for="Raza" class="form-label">
+                                    <i class="fas fa-dna"></i> Raza
+                                </label>
+                                <input asp-for="Raza" class="form-control"
+                                       placeholder="Ej: Labrador, Siamés..." maxlength="50" />
+                                <span asp-validation-for="Raza" class="text-danger small"></span>
+                                <small class="text-muted d-block mt-1">Opcional - Deje vacío si no conoce la raza</small>
+                            </div>
+
+                            <div class="form-field-card">
+                                <label asp-for="FechaNacimiento" class="form-label">
+                                    <i class="fas fa-birthday-cake"></i> Fecha de Nacimiento
+                                </label>
+                                <input asp-for="FechaNacimiento" type="text" class="form-control datepicker"
+                                       id="fechaNacimiento" placeholder="Seleccione la fecha" readonly />
+                                <span asp-validation-for="FechaNacimiento" class="text-danger small"></span>
+                                <small class="text-muted d-block mt-1">Si no conoce la fecha exacta, ingrese una aproximada</small>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-light border-warning mt-3 mb-0">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-info-circle text-warning me-2 fa-lg"></i>
+                                <div>
+                                    <strong>Información:</strong> Una vez registrada su mascota,
+                                    podrá agendar citas médicas y llevar un historial de atenciones.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="edit-form-footer mt-3">
+        <a asp-action="listaMascotasPorCliente"
+                               class="btn-cancel-edit">
+                                <i class="fas fa-times me-1"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn-create-gradient" id="btnRegistrar">
+                                <i class="fas fa-save me-1"></i> Registrar Mascota
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            flatpickr("#fechaNacimiento", {
+                locale: "es",
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "d \\de F \\de Y",
+                minDate: "1990-01-01",
+                maxDate: "today",
+                disableMobile: false,
+                monthSelectorType: "dropdown",
+                animate: true
+            });
+
+            document.getElementById('formMascota').addEventListener('submit', function(e) {
+                const nombre = document.querySelector('input[name="Nombre"]').value.trim();
+                const especie = document.getElementById('selectEspecie').value;
+                const fecha = document.getElementById('fechaNacimiento').value;
+
+                if (!nombre || !especie || !fecha) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Campos incompletos',
+                        text: 'Por favor complete todos los campos requeridos.',
+                        confirmButtonColor: '#706D60'
+                    });
+                    return false;
+                }
+
+                document.getElementById('btnRegistrar').innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Registrando...';
+                document.getElementById('btnRegistrar').disabled = true;
+            });
+        });
+    </script>
+}

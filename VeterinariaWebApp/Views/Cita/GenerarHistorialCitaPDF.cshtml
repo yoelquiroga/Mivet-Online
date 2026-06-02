@@ -1,0 +1,136 @@
+@model VeterinariaWebApp.Models.Usuario.Cliente.CitaCliente
+@{
+    Layout = null;
+    Func<string, string> BadgeStyle = (estado) => estado switch
+    {
+        "Pendiente" => "background-color: #fff3cd; color: #856404;",
+        "Atendida" => "background-color: #d4edda; color: #155724;",
+        "Cancelada" => "background-color: #f8d7da; color: #721c24;",
+        _ => "background-color: #e2e3e5; color: #383d41;"
+    };
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Historial M&eacute;dico - @Model.mascota</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; color: #000000; font-size: 14px; max-width: 750px; margin: 0 auto; padding: 30px; }
+        .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #EEB447; padding-bottom: 20px; margin-bottom: 30px; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-left img { height: 50px; width: auto; }
+        .header-left h1 { color: #000000; font-size: 22px; margin: 0; font-weight: bold; }
+        .header-left p { color: #94827F; font-size: 11px; margin: 3px 0 0 0; letter-spacing: 0.5px; }
+        .header-right { text-align: right; color: #94827F; font-size: 12px; }
+        .header-right strong { color: #000000; display: block; margin-bottom: 3px; }
+        .title-section { text-align: center; margin-bottom: 30px; }
+        .title-section h2 { color: #000000; font-size: 24px; margin: 0 0 10px 0; font-weight: bold; letter-spacing: 1px; }
+        .title-section p { color: #94827F; font-size: 13px; }
+        h3 { color: #000000; font-size: 16px; border-bottom: 2px solid #EEB447; padding-bottom: 8px; margin-bottom: 20px; margin-top: 30px; }
+        .data-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        .data-table tr { border-bottom: 1px solid #E5E5E5; }
+        .data-table td { padding: 10px 0; }
+        .data-table .label { color: #94827F; font-weight: 600; width: 35%; }
+        .data-table .value { color: #000000; }
+        .badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .info-box { margin-bottom: 25px; padding: 0; }
+        .info-box .pet-name { font-size: 20px; font-weight: bold; color: #000000; }
+        .info-box .pet-details { color: #94827F; font-size: 13px; margin-top: 4px; }
+        .medical-section { margin-top: 25px; }
+        .medical-field { margin-bottom: 18px; }
+        .medical-label { font-weight: 700; color: #000000; font-size: 12px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .medical-value { padding: 10px 14px; border: 1px solid #E5E5E5; border-radius: 4px; font-size: 13px; line-height: 1.5; color: #000000; background: #FAFAFA; }
+        .attend-date { color: #94827F; font-size: 13px; margin-bottom: 15px; font-style: italic; }
+        .no-data { text-align: center; padding: 30px; color: #94827F; font-style: italic; }
+        .footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #E5E5E5; text-align: center; }
+        .footer p { color: #94827F; font-size: 11px; margin: 5px 0; }
+        .footer .brand { color: #000000; font-weight: bold; }
+        .footer .highlight { color: #EEB447; font-size: 10px; margin-top: 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="header-left">
+            <div class="logo-container">
+                <img src="~/img/pataslogo.svg" alt="Mivet Online" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                <i class="fas fa-paw" style="display:none; font-size:40px; color:#94827F;"></i>
+            </div>
+            <div>
+                <h1>Mivet Online</h1>
+                <p>SISTEMA DE GESTIÓN VETERINARIA</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <strong>HISTORIAL MÉDICO</strong>
+            <span>Documento generado automáticamente</span><br>
+            <span>@DateTime.Now.ToString("dd/MM/yyyy HH:mm")</span>
+        </div>
+    </div>
+
+    <div class="title-section">
+        <h2>HISTORIAL MÉDICO</h2>
+        <p>@Model.mascota • @Model.especie @(!string.IsNullOrEmpty(Model.raza) ? $"- {Model.raza}" : "")</p>
+    </div>
+
+    <div class="info-box">
+        <span style="font-size:36px; vertical-align:middle;">@Model.EspecieEmoji</span>
+        <span class="pet-name" style="margin-left:10px;">@Model.mascota</span>
+        <div class="pet-details">@Model.especie @(!string.IsNullOrEmpty(Model.raza) ? $"- {Model.raza}" : "")</div>
+        <span class="badge" style="@BadgeStyle(Model.EstadoDescripcion); margin-top:8px; display:inline-block;">@Model.EstadoDescripcion</span>
+    </div>
+
+    <h3>INFORMACIÓN DE LA CITA</h3>
+
+    <table class="data-table">
+        <tr><td class="label">N° de Cita</td><td class="value">@Model.ide_cit</td></tr>
+        <tr><td class="label">Fecha</td><td class="value">@Model.cal_cit.ToString("dddd, dd MMMM yyyy")</td></tr>
+        <tr><td class="label">Hora</td><td class="value">@Model.cal_cit.ToString("hh:mm tt")</td></tr>
+        <tr><td class="label">Consultorio</td><td class="value">@Model.con_cit</td></tr>
+        <tr><td class="label">Veterinario</td><td class="value">Dr(a). @Model.veterinario</td></tr>
+        <tr><td class="label">Especialidad</td><td class="value">@Model.especialidad</td></tr>
+        <tr><td class="label">Monto Pagado</td><td class="value">S/ @Model.mon_pag.ToString("N2")</td></tr>
+        <tr><td class="label">Método de Pago</td><td class="value">@Model.metodo_pago</td></tr>
+    </table>
+
+    <h3>REGISTRO DE ATENCIÓN MÉDICA</h3>
+
+    @if (Model.TieneHistorial)
+    {
+        <div class="medical-section">
+            @if (Model.fecha_atencion.HasValue)
+            {
+                <div class="attend-date">Fecha de Atención: <strong>@Model.fecha_atencion.Value.ToString("dd/MM/yyyy HH:mm")</strong></div>
+            }
+            @if (!string.IsNullOrEmpty(Model.sintomas))
+            {
+                <div class="medical-field"><div class="medical-label">Síntomas</div><div class="medical-value">@Model.sintomas</div></div>
+            }
+            <div class="medical-field"><div class="medical-label">Diagnóstico</div><div class="medical-value">@Model.diagnostico</div></div>
+            <div class="medical-field"><div class="medical-label">Tratamiento</div><div class="medical-value">@Model.tratamiento</div></div>
+            @if (!string.IsNullOrEmpty(Model.medicamentos))
+            {
+                <div class="medical-field"><div class="medical-label">Medicamentos Recetados</div><div class="medical-value">@Model.medicamentos</div></div>
+            }
+            @if (!string.IsNullOrEmpty(Model.observaciones))
+            {
+                <div class="medical-field"><div class="medical-label">Observaciones</div><div class="medical-value">@Model.observaciones</div></div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="no-data">No hay información de atención médica registrada para esta cita.</div>
+    }
+
+    <div class="footer">
+        <p><strong class="brand">Mivet Online</strong> — Sistema de Gestión Veterinaria</p>
+        <p>Documento generado automáticamente • No requiere firma</p>
+        <p class="highlight">Estado: @Model.EstadoDescripcion</p>
+    </div>
+
+</body>
+</html>

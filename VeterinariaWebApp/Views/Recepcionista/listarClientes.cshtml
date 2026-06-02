@@ -1,0 +1,60 @@
+﻿
+@model IEnumerable<VeterinariaWebApp.Models.Usuario.Cliente.Cliente>
+
+@{
+    ViewData["Title"] = "Listado de Clientes";
+    Layout = "~/Views/Shared/_LayoutRecepcionista.cshtml";
+}
+
+<h1>Clientes</h1>
+<hr />
+
+<p>
+    <a asp-action="listarClientesPDF" class="btn btn-danger px-4">
+        <i class="fas fa-file-pdf me-2"></i> Exportar PDF
+    </a>
+</p>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Clientes Registrados</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>@Html.DisplayNameFor(model => model.IdCliente)</th>
+                        <th>@Html.DisplayNameFor(model => model.NombreUsuario)</th>
+                        <th>@Html.DisplayNameFor(model => model.ApellidoUsuario)</th>
+                        <th>@Html.DisplayNameFor(model => model.FechaNacimiento)</th>
+                        <th>@Html.DisplayNameFor(model => model.TipoDocumento)</th>
+                        <th>@Html.DisplayNameFor(model => model.NumeroDocumento)</th>
+                        <th>@Html.DisplayNameFor(model => model.Rol)</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.IdCliente)</td>
+                            <td>@Html.DisplayFor(modelItem => item.NombreUsuario)</td>
+                            <td>@Html.DisplayFor(modelItem => item.ApellidoUsuario)</td>
+                            <td>@Html.DisplayFor(modelItem => item.FechaNacimiento)</td>
+                            <td>@Html.DisplayFor(modelItem => item.TipoDocumento)</td>
+                            <td>@Html.DisplayFor(modelItem => item.NumeroDocumento)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Rol)</td>
+                            <td>
+                                <a class="btn btn-info btn-sm me-2"
+                                   href="@Url.Action("DetalleCliente", "Cliente", new { id = item.IdCliente })">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

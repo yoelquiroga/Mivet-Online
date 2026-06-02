@@ -1,0 +1,94 @@
+﻿@model VeterinariaWebApp.Models.Cita.Cita
+@{
+    Layout = null;
+    Func<string, string> BadgeStyle = (estado) => estado switch
+    {
+        "Pendiente" => "background-color: #fff3cd; color: #856404;",
+        "Atendida" => "background-color: #d4edda; color: #155724;",
+        "Cancelada" => "background-color: #f8d7da; color: #721c24;",
+        _ => "background-color: #e2e3e5; color: #383d41;"
+    };
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Comprobante de Cita #@Model.IdCita</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; color: #000000; font-size: 14px; max-width: 750px; margin: 0 auto; padding: 30px; }
+        .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #EEB447; padding-bottom: 20px; margin-bottom: 30px; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-left img { height: 50px; width: auto; }
+        .header-left h1 { color: #000000; font-size: 22px; margin: 0; font-weight: bold; }
+        .header-left p { color: #94827F; font-size: 11px; margin: 3px 0 0 0; letter-spacing: 0.5px; }
+        .header-right { text-align: right; color: #94827F; font-size: 12px; }
+        .header-right strong { color: #000000; display: block; margin-bottom: 3px; }
+        .title-section { text-align: center; margin-bottom: 30px; }
+        .title-section h2 { color: #000000; font-size: 24px; margin: 0 0 10px 0; font-weight: bold; letter-spacing: 1px; }
+        .title-section p { color: #94827F; font-size: 13px; }
+        h3 { color: #000000; font-size: 16px; border-bottom: 2px solid #EEB447; padding-bottom: 8px; margin-bottom: 20px; margin-top: 30px; }
+        .data-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        .data-table tr { border-bottom: 1px solid #E5E5E5; }
+        .data-table td { padding: 10px 0; }
+        .data-table .label { color: #94827F; font-weight: 600; width: 35%; }
+        .data-table .value { color: #000000; }
+        .badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #E5E5E5; text-align: center; }
+        .footer p { color: #94827F; font-size: 11px; margin: 5px 0; }
+        .footer .brand { color: #000000; font-weight: bold; }
+        .footer .highlight { color: #EEB447; font-size: 10px; margin-top: 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="header-left">
+            <div class="logo-container">
+                <img src="~/img/pataslogo.svg" alt="Mivet Online" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                <i class="fas fa-paw" style="display:none; font-size:40px; color:#94827F;"></i>
+            </div>
+            <div>
+                <h1>Mivet Online</h1>
+                <p>SISTEMA DE GESTIÓN VETERINARIA</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <strong>COMPROBANTE DE CITA</strong>
+            <span>Documento generado automáticamente</span><br>
+            <span>@DateTime.Now.ToString("dd/MM/yyyy HH:mm")</span>
+        </div>
+    </div>
+
+    <div class="title-section">
+        <h2>COMPROBANTE DE CITA</h2>
+        <p>Documento N°: @Model.IdCita</p>
+    </div>
+
+    <h3>INFORMACIÓN DE LA CITA</h3>
+
+    <table class="data-table">
+        <tr><td class="label">N° de Cita</td><td class="value">@Model.IdCita</td></tr>
+        <tr><td class="label">Fecha y Hora</td><td class="value">@Model.CalendarioCita.ToString("dd/MM/yyyy HH:mm")</td></tr>
+        <tr><td class="label">Consultorio</td><td class="value">@Model.Consultorio</td></tr>
+        <tr><td class="label">Veterinario</td><td class="value">Dr(a). @Model.NombreVeterinario</td></tr>
+        <tr><td class="label">Mascota</td><td class="value">@Model.NombreMascota</td></tr>
+        <tr><td class="label">Estado</td><td class="value"><span class="badge" style="@BadgeStyle(Model.EstadoDescripcion)">@Model.EstadoDescripcion</span></td></tr>
+    </table>
+
+    <div style="text-align:right; margin-top:30px; padding-top:20px; border-top:3px solid #EEB447;">
+        <p style="color:#000000; font-size:18px; font-weight:bold;">
+            MONTO A PAGAR: <span style="color:#EEB447; margin-left:10px;">S/ @Model.MontoPago.ToString("0.00")</span>
+        </p>
+    </div>
+
+    <div class="footer">
+        <p><strong class="brand">Mivet Online</strong> — Sistema de Gestión Veterinaria</p>
+        <p>Documento generado automáticamente • No requiere firma</p>
+        <p class="highlight">Estado: @Model.EstadoDescripcion</p>
+    </div>
+
+</body>
+</html>

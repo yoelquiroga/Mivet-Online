@@ -1,0 +1,382 @@
+﻿@{
+    ViewData["Title"] = "Inicio - Veterinario";
+    Layout = "~/Views/Shared/_LayoutVeterinario.cshtml";
+    var nombre = Context.Session.GetString("NombreUsuario") ?? "Veterinario";
+    var especialidad = ViewBag.Veterinario?.especialidad;
+}
+
+<div class="vet-dashboard">
+
+    @* ────────────── WELCOME ────────────── *@
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h4 class="mb-1" style="color:#575252;font-weight:800;">
+                <i class="fas fa-hand-sparkles mr-2" style="color:#EEB447;"></i>¡Hola, @nombre!
+            </h4>
+            <p class="mb-0" style="color:#94827F;font-size:0.9rem;">
+                <i class="fas fa-stethoscope mr-1"></i>@(especialidad ?? "Veterinario General")
+            </p>
+        </div>
+        <div>
+            <span class="vet-badge vet-badge-atendida"><i class="fas fa-calendar-day mr-1"></i>@DateTime.Now.ToString("dddd, dd MMMM", new System.Globalization.CultureInfo("es-PE")).ToUpper()</span>
+        </div>
+    </div>
+
+    @* ────────────── KPI ROW ────────────── *@
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="vet-kpi-card vet-kpi-card-highlight d-flex align-items-center">
+                <div class="vet-kpi-icon mr-3"><i class="fas fa-calendar-check"></i></div>
+                <div class="flex-grow-1">
+                    <div class="vet-kpi-label">Citas Hoy</div>
+                    <div class="vet-kpi-value">@ViewBag.CitasHoyCount</div>
+                    <div class="vet-kpi-sub">@ViewBag.EnAtencion en atención</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="vet-kpi-card d-flex align-items-center">
+                <div class="vet-kpi-icon mr-3" style="background:#FFF3CD;color:#FFC061;"><i class="fas fa-clock"></i></div>
+                <div class="flex-grow-1">
+                    <div class="vet-kpi-label">Pendientes</div>
+                    <div class="vet-kpi-value">@ViewBag.Pendientes</div>
+                    <div class="vet-kpi-sub">Esperando atención</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="vet-kpi-card d-flex align-items-center">
+                <div class="vet-kpi-icon mr-3" style="background:#D7C8C1;color:#575252;"><i class="fas fa-check-circle"></i></div>
+                <div class="flex-grow-1">
+                    <div class="vet-kpi-label">Atendidas</div>
+                    <div class="vet-kpi-value">@ViewBag.Atendidas</div>
+                    <div class="vet-kpi-sub">Total completadas</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="vet-kpi-card d-flex align-items-center">
+                <div class="vet-kpi-icon mr-3" style="background:#E8F4F4;color:#7CB8B9;"><i class="fas fa-paw"></i></div>
+                <div class="flex-grow-1">
+                    <div class="vet-kpi-label">Ingresos Totales</div>
+                    <div class="vet-kpi-value">S/ @ViewBag.IngresosTotales.ToString("N2")</div>
+                    <div class="vet-kpi-sub">@ViewBag.Atendidas citas atendidas</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ────────────── CALENDAR + QUEUE ────────────── *@
+    <div class="row mb-4">
+        <div class="col-lg-7 mb-3 mb-lg-0">
+            <div class="vet-card">
+                <div class="vet-card-header">
+                    <h5 class="vet-card-title"><i class="fas fa-calendar-alt mr-2" style="color:#94827F;"></i>Calendario de Citas</h5>
+                </div>
+                <div class="vet-card-body">
+                    <div class="vet-calendar-wrapper" id="veterinarioCalendar"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="vet-card h-100">
+                <div class="vet-card-header">
+                    <h5 class="vet-card-title"><i class="fas fa-list mr-2" style="color:#EEB447;"></i>Próximas Citas</h5>
+                    <a href="@Url.Action("listaCitaPorVeterinarios", "Veterinario")" class="vet-card-link">Ver todo <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+                <div class="vet-card-body" id="proximasCitasContainer">
+                    <div class="vet-loading-spinner"><i class="fas fa-spinner"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ────────────── CHARTS ROW ────────────── *@
+    <div class="row">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+            <div class="vet-card h-100">
+                <div class="vet-card-header">
+                    <h5 class="vet-card-title"><i class="fas fa-chart-bar mr-2" style="color:#575252;"></i>Citas por Día</h5>
+                </div>
+                <div class="vet-card-body">
+                    <div class="vet-chart-wrapper">
+                        <canvas id="dailyChart"></canvas>
+                        <div class="vet-chart-empty" id="emptyDaily">
+                            <i class="fas fa-chart-bar"></i>
+                            <p>No hay citas este mes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="vet-card h-100">
+                <div class="vet-card-header">
+                    <h5 class="vet-card-title"><i class="fas fa-chart-pie mr-2" style="color:#94827F;"></i>Distribución por Estado</h5>
+                </div>
+                <div class="vet-card-body">
+                    <div class="vet-chart-wrapper" style="position:relative;">
+                        <canvas id="statusChart"></canvas>
+                        <div class="vet-donut-center" id="donutCenter">
+                            <div class="vet-donut-center-value">@ViewBag.TotalCitas</div>
+                            <div class="vet-donut-center-label">Total</div>
+                        </div>
+                        <div class="vet-chart-empty" id="emptyStatus">
+                            <i class="fas fa-chart-pie"></i>
+                            <p>Sin datos disponibles</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // ─── Datos del servidor ───
+        var todasCitas = @Html.Raw(ViewBag.TodasCitasJSON ?? "[]");
+        var distribucionEstado = @Html.Raw(ViewBag.DistribucionEstadoJSON ?? "{}");
+        var citasPorDia = @Html.Raw(ViewBag.CitasPorDiaJSON ?? "[]");
+        var especiesAtendidas = @Html.Raw(ViewBag.EspeciesAtendidasJSON ?? "[]");
+        var proximasCitas = @Html.Raw(ViewBag.ProximasCitasJSON ?? "[]");
+        var ultimasAtenciones = @Html.Raw(ViewBag.UltimasAtencionesJSON ?? "[]");
+
+        // ─── Render próximas citas ───
+        (function renderQueue() {
+            var container = document.getElementById('proximasCitasContainer');
+            if (!container) return;
+            if (!proximasCitas || proximasCitas.length === 0) {
+                container.innerHTML =
+                    '<div class="vet-queue-empty"><i class="fas fa-calendar-check"></i><p>No hay citas pr\u00f3ximas</p></div>';
+                return;
+            }
+            var html = '';
+            for (var i = 0; i < proximasCitas.length; i++) {
+                var c = proximasCitas[i];
+                var fecha = new Date(c.cal_cit);
+                var hora = fecha.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
+                var estado = c.est_cit === 'E' ? 'atencion' : 'pendiente';
+                var estadoLabel = c.est_cit === 'E' ? 'En Atenci\u00f3n' : 'Pendiente';
+                html +=
+                    '<div class="vet-queue-item">' +
+                        '<div class="vet-queue-time">' + hora + '</div>' +
+                        '<div class="vet-queue-info">' +
+                            '<p class="vet-queue-pet">' + c.mascota + ' <span style="color:#94827F;font-size:0.75rem;">(' + c.especie + ')</span></p>' +
+                            '<p class="vet-queue-owner"><i class="fas fa-user mr-1"></i>' + c.nombre_dueno + ' \u00b7 Cons. ' + c.con_cit + '</p>' +
+                        '</div>' +
+                        '<span class="vet-queue-status vet-queue-status-' + estado + '">' + estadoLabel + '</span>' +
+                    '</div>';
+            }
+            container.innerHTML = html;
+        })();
+
+        // ─── FullCalendar ───
+        (function initCalendar() {
+            try {
+                var calendarEl = document.getElementById('veterinarioCalendar');
+                if (!calendarEl || typeof FullCalendar === 'undefined') return;
+
+                var events = [];
+                for (var i = 0; i < todasCitas.length; i++) {
+                    var c = todasCitas[i];
+                    var fecha = new Date(c.cal_cit);
+                    var className = 'vet-cal-event-pendiente';
+                    if (c.est_cit === 'E') className = 'vet-cal-event-atencion';
+                    else if (c.est_cit === 'A') className = 'vet-cal-event-atendida';
+                    else if (c.est_cit === 'C') continue;
+
+                    events.push({
+                        id: c.ide_cit,
+                        title: c.mascota + ' (' + c.est_cit + ')',
+                        start: fecha.toISOString(),
+                        allDay: true,
+                        className: className,
+                        extendedProps: {
+                            mascota: c.mascota,
+                            especie: c.especie,
+                            dueno: c.nombre_dueno,
+                            consultorio: c.con_cit,
+                            estado: c.est_cit,
+                            monto: c.mon_pag
+                        }
+                    });
+                }
+
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'dayGridMonth',
+                    locale: 'es',
+                    firstDay: 1,
+                    height: 'auto',
+                    dayMaxEvents: 2,
+                    headerToolbar: { left: 'prev', center: 'title', right: 'next' },
+                    events: events,
+                    eventDidMount: function(info) {
+                        info.el.style.margin = '1px 2px';
+                        info.el.style.fontSize = '0.7rem';
+                        info.el.style.cursor = 'pointer';
+                    },
+                    eventClick: function(info) {
+                        var p = info.event.extendedProps;
+                        var estadoMap = { P: 'Pendiente', E: 'En Atenci\u00f3n', A: 'Atendida', C: 'Cancelada' };
+                        Swal.fire({
+                            title: p.mascota,
+                            html:
+                                '<div style="text-align:left;">' +
+                                    '<p><strong>Especie:</strong> ' + p.especie + '</p>' +
+                                    '<p><strong>Due\u00f1o:</strong> ' + p.dueno + '</p>' +
+                                    '<p><strong>Consultorio:</strong> ' + p.consultorio + '</p>' +
+                                    '<p><strong>Estado:</strong> ' + (estadoMap[p.estado] || p.estado) + '</p>' +
+                                    (p.monto ? '<p><strong>Monto:</strong> S/ ' + parseFloat(p.monto).toFixed(2) + '</p>' : '') +
+                                '</div>',
+                            icon: 'info',
+                            confirmButtonColor: '#94827F',
+                            confirmButtonText: 'Cerrar',
+                            background: '#FDFDFD',
+                            color: '#575252'
+                        });
+                    }
+                });
+                calendar.render();
+            } catch (e) { console.log('Calendar:', e.message); }
+        })();
+
+        // ─── Chart defaults (v2 API) ───
+        try {
+            if (typeof Chart !== 'undefined') {
+                Chart.defaults.global.defaultFontFamily = "'Segoe UI', Arial, sans-serif";
+                Chart.defaults.global.defaultFontColor = '#575252';
+            }
+        } catch (e) { console.log('Chart defaults:', e.message); }
+
+        // ─── Daily Bar Chart (v2 syntax, gradient) ───
+        (function initDailyChart() {
+            try {
+                var canvas = document.getElementById('dailyChart');
+                if (!canvas || typeof Chart === 'undefined') return;
+
+                var labels = citasPorDia.map(function(d) { return d.dia; });
+                var data = citasPorDia.map(function(d) { return d.total; });
+                var total = data.reduce(function(a, b) { return a + b; }, 0);
+
+                if (total === 0) {
+                    document.getElementById('emptyDaily').style.display = 'block';
+                    canvas.style.display = 'none';
+                    return;
+                }
+
+                var ctx = canvas.getContext('2d');
+                var gradient = ctx.createLinearGradient(0, 0, 0, 300);
+                gradient.addColorStop(0, '#575252');
+                gradient.addColorStop(1, '#D7C8C1');
+
+                new Chart(canvas, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: gradient,
+                            borderWidth: 0,
+                            barPercentage: 0.5,
+                            categoryPercentage: 0.8
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        legend: { display: false },
+                        layout: {
+                            padding: { top: 20, bottom: 0 }
+                        },
+                        tooltips: {
+                            enabled: true,
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(44, 62, 80, 0.9)',
+                            titleFontColor: '#ffffff',
+                            bodyFontColor: '#ffffff',
+                            cornerRadius: 6,
+                            displayColors: false,
+                            xAlign: 'center',
+                            callbacks: {
+                                label: function(tooltipItem, data) {
+                                    try {
+                                        var val = data.datasets[0].data[tooltipItem.index];
+                                        return val + ' cita' + (val !== 1 ? 's' : '');
+                                    } catch (e) { return ''; }
+                                }
+                            }
+                        },
+                        scales: {
+                            xAxes: [{
+                                gridLines: { display: false },
+                                ticks: { fontColor: '#94827F', fontSize: 11 }
+                            }],
+                            yAxes: [{
+                                gridLines: { display: false },
+                                ticks: { fontColor: '#94827F', fontSize: 11, stepSize: 1, beginAtZero: true }
+                            }]
+                        }
+                    }
+                });
+            } catch (e) { console.log('Daily chart:', e.message); }
+        })();
+
+        // ─── Status Donut Chart (v2 syntax, cutoutPercentage) ───
+        (function initStatusChart() {
+            try {
+                var canvas = document.getElementById('statusChart');
+                if (!canvas || typeof Chart === 'undefined') return;
+
+                var labels = Object.keys(distribucionEstado);
+                var data = Object.values(distribucionEstado);
+                var total = data.reduce(function(a, b) { return a + b; }, 0);
+
+                if (total === 0) {
+                    document.getElementById('emptyStatus').style.display = 'block';
+                    document.getElementById('donutCenter').style.display = 'none';
+                    canvas.style.display = 'none';
+                    return;
+                }
+
+                new Chart(canvas, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: ['#575252', '#EEB447', '#7CB8B9', '#D7C8C1'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        cutoutPercentage: 75,
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 16,
+                                usePointStyle: true,
+                                fontColor: '#575252',
+                                fontSize: 12
+                            }
+                        },
+                        tooltips: {
+                            backgroundColor: '#2C3E50',
+                            titleFontColor: '#ffffff',
+                            bodyFontColor: '#ffffff',
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(item, data) {
+                                    var val = data.datasets[0].data[item.index];
+                                    var pct = ((val / total) * 100).toFixed(1);
+                                    return data.labels[item.index] + ': ' + val + ' (' + pct + '%)';
+                                }
+                            }
+                        }
+                    }
+                });
+            } catch (e) { console.log('Status chart:', e.message); }
+        })();
+    </script>
+}

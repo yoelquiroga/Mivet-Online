@@ -1,0 +1,450 @@
+﻿@model IEnumerable<VeterinariaWebApp.Models.Usuario.Veterinario.CitaVeterinario>
+
+@{
+    ViewData["Title"] = "Mis Citas Asignadas";
+    Layout = "~/Views/Shared/_LayoutVeterinario.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-calendar-check me-2" style="color: #584D53;"></i> Mis Citas Asignadas
+        </h1>
+    </div>
+
+    <!-- Mensajes -->
+    @if (TempData["Exito"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Exito"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <!-- Estado vacío -->
+        <div class="card shadow-sm">
+            <div class="card-body text-center py-5">
+                <div class="empty-state">
+                    <i class="fas fa-calendar-times fa-5x text-muted mb-4"></i>
+                    <h4 class="text-muted">No tienes citas asignadas</h4>
+                    <p class="text-muted">Las citas aparecerán aquí cuando los clientes las agenden contigo.</p>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Resumen por estados -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stat-card stat-card-marron">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="stat-label">Total de Citas</div>
+                                <div class="stat-value">@Model.Count(c => c.est_cit != "C")</div>
+                            </div>
+                            <div class="icon-wrapper">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stat-card stat-card-oro">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="stat-label">Pendientes</div>
+                                <div class="stat-value">@Model.Count(c => c.est_cit == "P")</div>
+                            </div>
+                            <div class="icon-wrapper">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stat-card stat-card-azul">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="stat-label">En Atención</div>
+                                <div class="stat-value">@Model.Count(c => c.est_cit == "E")</div>
+                            </div>
+                            <div class="icon-wrapper">
+                                <i class="fas fa-stethoscope"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stat-card stat-card-marron">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="stat-label">Atendidas</div>
+                                <div class="stat-value">@Model.Count(c => c.est_cit == "A")</div>
+                            </div>
+                            <div class="icon-wrapper">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Citas Pendientes (prioritarias) -->
+        
+            var ahora = DateTime.Now;
+            var todasPendientes = Model.Where(c => c.est_cit == "P").OrderBy(c => c.cal_cit).ToList();
+            var citasEnEspera = todasPendientes.Where(c => c.cal_cit > ahora).ToList();
+            var citasPendientes = todasPendientes.Where(c => c.cal_cit >= ahora.AddMinutes(-30) && c.cal_cit <= ahora).ToList();
+            var citasVencidas = todasPendientes.Where(c => c.cal_cit < ahora.AddMinutes(-30)).ToList();
+            var citasEnAtencion = Model.Where(c => c.est_cit == "E").ToList();
+            var citasAtendidas = Model.Where(c => c.est_cit == "A").OrderByDescending(c => c.cal_cit).ToList();
+        
+
+        @if (citasEnAtencion.Any())
+        {
+            <div class="card shadow mb-4" style="border-color: #7695B5;">
+                <div class="card-header py-3" style="background: linear-gradient(135deg, #7695B5, #76A7B7); color: #FFFFFF;">
+                    <h6 class="m-0 font-weight-bold text-white">
+                        <i class="fas fa-stethoscope me-2"></i>En Atención Actualmente (@citasEnAtencion.Count())
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        @foreach (var cita in citasEnAtencion)
+                        {
+                            <div class="col-xl-4 col-lg-6 mb-4">
+                                <div class="card cita-card shadow h-100" style="border-color: #7695B5; border-width: 3px;">
+                                    <div class="card-header py-3 bg-info-light">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center">
+                                                <span class="fs-2 me-2">@cita.EspecieEmoji</span>
+                                                <div>
+                                                    <h6 class="mb-0 fw-bold">@cita.mascota</h6>
+                                                    <small class="text-muted">@cita.especie</small>
+                                                </div>
+                                            </div>
+                                            <span class="badge fs-6" style="background: rgba(118, 149, 181, 0.15); color: #7695B5;">
+                                                <i class="fas fa-stethoscope me-1"></i>En Atención
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="info-item mb-2">
+                                            <i class="fas fa-calendar me-2" style="color: #7695B5;"></i>
+                                            <strong>@cita.cal_cit.ToString("dd/MM/yyyy")</strong> a las 
+                                            <strong>@cita.cal_cit.ToString("hh:mm tt")</strong>
+                                        </div>
+                                        <div class="info-item mb-2">
+                                            <i class="fas fa-door-open me-2" style="color: #7695B5;"></i>
+                                            Consultorio: <strong>@cita.con_cit</strong>
+                                        </div>
+                                        <div class="info-item mb-2">
+                                            <i class="fas fa-user me-2" style="color: #7695B5;"></i>
+                                            Dueño: <strong>@cita.nombre_dueno</strong>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer bg-transparent">
+                                        <a href="@Url.Action("AtenderCita", "Veterinario", new { id = cita.ide_cit })" 
+                                           class="btn w-100" style="background: #7695B5; color: #FFFFFF; font-weight: 600; border: none; transition: all 0.3s ease;">
+                                            <i class="fas fa-clipboard-list me-2"></i>Continuar Atención
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (citasEnEspera.Any())
+        {
+            <div class="card shadow mb-4" style="border-color: #B8B0A5;">
+                <div class="card-header py-3" style="background: linear-gradient(135deg, #B8B0A5, #9C9286);">
+                    <h6 class="m-0 font-weight-bold text-white">
+                        <i class="fas fa-hourglass-half me-2"></i>En Espera (@citasEnEspera.Count())
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        @foreach (var cita in citasEnEspera)
+                        {
+                            <div class="col-xl-4 col-lg-6 mb-4">
+                                <div class="card cita-card shadow h-100" style="border-color: #B8B0A5; opacity: 0.85;">
+                                    <div class="card-header py-3" style="background: #F5F3F0;">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center">
+                                                <span class="fs-2 me-2">@cita.EspecieEmoji</span>
+                                                <div>
+                                                    <h6 class="mb-0 fw-bold">@cita.mascota</h6>
+                                                    <small class="text-muted">@cita.especie</small>
+                                                </div>
+                                            </div>
+                                            <span class="badge" style="background: rgba(184, 176, 165, 0.2); color: #706D60;">
+                                                <i class="fas fa-hourglass-half me-1"></i>En Espera
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="info-item mb-2">
+                                            <i class="fas fa-calendar me-2" style="color: #706D60;"></i>
+                                            <strong>@cita.cal_cit.ToString("dddd, dd MMM yyyy")</strong>
+                                        </div>
+                                        <div class="info-item mb-2">
+                                            <i class="fas fa-clock me-2" style="color: #706D60;"></i>
+                                            Hora: <span class="fs-5 fw-bold" style="color: #584D53;">@cita.cal_cit.ToString("hh:mm tt")</span>
+                                        </div>
+                                        <div class="info-item mb-2">
+                                            <i class="fas fa-door-open me-2" style="color: #706D60;"></i>
+                                            Consultorio: <strong>@cita.con_cit</strong>
+                                        </div>
+                                        <hr>
+                                        <div class="info-item mb-2">
+                                            <i class="fas fa-user text-secondary me-2"></i>
+                                            Dueño: <strong>@cita.nombre_dueno</strong>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="fas fa-money-bill-wave me-2" style="color: #706D60;"></i>
+                                            Monto: <span class="badge" style="background: rgba(112, 109, 96, 0.15); color: #575252;">S/ @cita.mon_pag.ToString("N2")</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer bg-transparent">
+                                        <button class="btn w-100 btn-lg" style="background: #D7D2CA; color: #9C9286; cursor: not-allowed; border: none;" disabled
+                                                title="La cita aún no está próxima. Estará disponible 30 minutos antes de la hora agendada.">
+                                            <i class="fas fa-clock me-2"></i>En Espera
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (citasPendientes.Any())
+        {
+            <div class="card shadow mb-4" style="border-color: #EEB447;">
+                <div class="card-header py-3" style="background: linear-gradient(135deg, #EEB447, #D4942B);">
+                    <h6 class="m-0 font-weight-bold" style="color: #2C3E50;">
+                        <i class="fas fa-clock me-2"></i>Pendientes (@citasPendientes.Count())
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        @foreach (var cita in citasPendientes)
+                        {
+                            <div class="col-xl-4 col-lg-6 mb-4">
+                                <div class="card cita-card shadow h-100" style="border-color: #EEB447;">
+                                    <div class="card-header py-3 bg-warning-light">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center">
+                                                <span class="fs-2 me-2">@cita.EspecieEmoji</span>
+                                                <div>
+                                                    <h6 class="mb-0 fw-bold">@cita.mascota</h6>
+                                                    <small class="text-muted">@cita.especie</small>
+                                                </div>
+                                            </div>
+                                            <span class="badge" style="background: rgba(238, 180, 71, 0.15); color: #D4942B;">
+                                                <i class="fas fa-clock me-1"></i>Pendiente
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="info-item mb-2">
+                                            <i class="fas fa-calendar me-2" style="color: #584D53;"></i>
+                                            <strong>@cita.cal_cit.ToString("dddd, dd MMM yyyy")</strong>
+                                        </div>
+                                        <div class="info-item mb-2">
+                                            <i class="fas fa-clock me-2" style="color: #584D53;"></i>
+                                            Hora: <span class="fs-5 fw-bold" style="color: #584D53;">@cita.cal_cit.ToString("hh:mm tt")</span>
+                                        </div>
+                                        <div class="info-item mb-2">
+                                            <i class="fas fa-door-open me-2" style="color: #584D53;"></i>
+                                            Consultorio: <strong>@cita.con_cit</strong>
+                                        </div>
+                                        <hr>
+                                        <div class="info-item mb-2">
+                                            <i class="fas fa-user text-secondary me-2"></i>
+                                            Dueño: <strong>@cita.nombre_dueno</strong>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="fas fa-money-bill-wave me-2" style="color: #706D60;"></i>
+                                            Monto: <span class="badge" style="background: rgba(112, 109, 96, 0.15); color: #575252;">S/ @cita.mon_pag.ToString("N2")</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer bg-transparent">
+                                        <a href="@Url.Action("IniciarAtencion", "Veterinario", new { id = cita.ide_cit })" 
+                                           class="btn btn-success w-100 btn-lg">
+                                            <i class="fas fa-play-circle me-2"></i>Iniciar Atención
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (citasVencidas.Any())
+        {
+            <div class="card shadow mb-4" style="border-color: #C63F3F;">
+                <div class="card-header py-3" style="background: linear-gradient(135deg, #C63F3F, #A83232);">
+                    <h6 class="m-0 font-weight-bold text-white">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Citas Vencidas (@citasVencidas.Count())
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        @foreach (var cita in citasVencidas)
+                        {
+                            <div class="col-xl-4 col-lg-6 mb-4">
+                                <div class="card cita-card shadow h-100" style="border-color: #C63F3F; border-width: 2px;">
+                                    <div class="card-header py-3 bg-danger-light">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center">
+                                                <span class="fs-2 me-2">@cita.EspecieEmoji</span>
+                                                <div>
+                                                    <h6 class="mb-0 fw-bold">@cita.mascota</h6>
+                                                    <small class="text-muted">@cita.especie</small>
+                                                </div>
+                                            </div>
+                                            <span class="badge fs-6" style="background: rgba(198, 63, 63, 0.15); color: #C63F3F;">
+                                                <i class="fas fa-exclamation-triangle me-1"></i>Vencida
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="info-item mb-2">
+                                            <i class="fas fa-calendar me-2" style="color: #C63F3F;"></i>
+                                            <strong>@cita.cal_cit.ToString("dddd, dd MMM yyyy")</strong>
+                                        </div>
+                                        <div class="info-item mb-2">
+                                            <i class="fas fa-clock me-2" style="color: #C63F3F;"></i>
+                                            Hora: <span class="fs-5 fw-bold" style="color: #C63F3F;">@cita.cal_cit.ToString("hh:mm tt")</span>
+                                        </div>
+                                        <div class="info-item mb-2">
+                                            <i class="fas fa-door-open me-2" style="color: #C63F3F;"></i>
+                                            Consultorio: <strong>@cita.con_cit</strong>
+                                        </div>
+                                        <hr>
+                                        <div class="info-item mb-2">
+                                            <i class="fas fa-user text-secondary me-2"></i>
+                                            Dueño: <strong>@cita.nombre_dueno</strong>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="fas fa-money-bill-wave me-2" style="color: #706D60;"></i>
+                                            Monto: <span class="badge" style="background: rgba(112, 109, 96, 0.15); color: #575252;">S/ @cita.mon_pag.ToString("N2")</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer bg-transparent">
+                                        <form asp-action="MarcarInasistencia" method="post" style="display:inline;"onsubmit="return confirm('¿Marcar al cliente como No Asistió? La cita pasará a estado Cancelado.');">
+                                            <input type="hidden" name="idCita" value="@cita.ide_cit" />
+                                            <button type="submit" class="btn w-100 btn-lg" style="background: #C63F3F; color: #FFFFFF; font-weight: 600; border: none;">
+                                                <i class="fas fa-user-slash me-2"></i>No Asistió
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (citasAtendidas.Any())
+        {
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #706D60, #575252); color: #FFFFFF;">
+                    <h6 class="m-0 font-weight-bold text-white">
+                        <i class="fas fa-check-circle me-2"></i>Citas Atendidas (@citasAtendidas.Count())
+                    </h6>
+                    <button class="btn btn-light btn-sm" type="button" data-bs-toggle="collapse" 
+                            data-bs-target="#collapseAtendidas" aria-expanded="false">
+                        <i class="fas fa-chevron-down"></i> Ver/Ocultar
+                    </button>
+                </div>
+                <div class="collapse" id="collapseAtendidas">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Mascota</th>
+                                        <th>Especie</th>
+                                        <th>Dueño</th>
+                                        <th>Consultorio</th>
+                                        <th>Monto</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var cita in citasAtendidas.Take(10))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@cita.cal_cit.ToString("dd/MM/yyyy")</strong><br>
+                                                <small class="text-muted">@cita.cal_cit.ToString("hh:mm tt")</small>
+                                            </td>
+                                            <td>
+                                                <span class="me-1">@cita.EspecieEmoji</span>
+                                                <strong>@cita.mascota</strong>
+                                            </td>
+                                            <td>@cita.especie</td>
+                                            <td>@cita.nombre_dueno</td>
+                                            <td>@cita.con_cit</td>
+                                            <td><span class="badge" style="background: rgba(112, 109, 96, 0.15); color: #575252;">S/ @cita.mon_pag.ToString("N2")</span></td>
+                                            <td>
+                                                <span class="badge" style="background: rgba(112, 109, 96, 0.15); color: #575252;">
+                                                    <i class="fas fa-check-circle me-1"></i>Atendida
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            @if (citasAtendidas.Count() > 10)
+                            {
+                                <p class="text-muted text-center">Mostrando las últimas 10 citas atendidas de @citasAtendidas.Count() totales.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Auto-cerrar alertas después de 5 segundos
+            setTimeout(function () {
+                var alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function (alert) {
+                    if (bootstrap && bootstrap.Alert) {
+                        var bsAlert = new bootstrap.Alert(alert);
+                        bsAlert.close();
+                    }
+                });
+            }, 5000);
+        });
+    </script>
+}

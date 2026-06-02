@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('/img/fondo_veterinaria.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        div {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        @RenderBody()
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        @if (TempData["Exito"] != null)
+        {
+            <text>
+            Swal.fire({ icon: 'success', title: 'Éxito', text: @Json.Serialize(TempData["Exito"]), toast: true, position: 'top-end', showConfirmButton: false, timer: 4000, timerProgressBar: true });
+            </text>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <text>
+            Swal.fire({ icon: 'error', title: 'Error', text: @Json.Serialize(TempData["Error"]), toast: true, position: 'top-end', showConfirmButton: false, timer: 5000, timerProgressBar: true });
+            </text>
+        }
+        function showToast(message, type) {
+            const icons = { success: 'success', error: 'error', info: 'info', warning: 'warning' };
+            Swal.fire({ icon: icons[type] || 'info', text: message, toast: true, position: 'top-end', showConfirmButton: false, timer: 4000, timerProgressBar: true });
+        }
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

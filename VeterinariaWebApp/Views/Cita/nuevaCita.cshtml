@@ -1,0 +1,783 @@
+@if (ViewBag.MensajePago != null)
+{
+    <div class="alert @(ViewBag.AutPag == true ? "alert-success" : "alert-info")" id="topBannerPago">
+        <i class="fas @(ViewBag.AutPag == true ? "fa-check-circle" : "fa-info-circle") me-2"></i>@ViewBag.MensajePago
+    </div>
+}
+
+@model VeterinariaWebApp.Models.Cita.CitaO
+
+@{
+    ViewData["Title"] = "Nueva Cita";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+    var clienteId = Context.Session.GetInt32("ClienteId");
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_green.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
+<style>
+    .split-layout {
+        display: flex;
+        gap: 0.625rem;
+        align-items: flex-start;
+    }
+    .split-layout .form-col {
+        flex: 0 0 48%;
+        min-width: 0;
+    }
+    .split-layout .calendar-col {
+        flex: 0 0 52%;
+        min-width: 0;
+    }
+    .edit-form-body {
+        padding: 0.75rem 0.875rem !important;
+    }
+    .edit-form-grid {
+        gap: 0.5rem !important;
+    }
+    .form-field-card {
+        margin-bottom: 0.25rem !important;
+    }
+    .form-field-card .form-control,
+    .form-field-card .form-select {
+        font-size: 0.88rem;
+        padding: 0.4rem 0.65rem;
+    }
+    .form-field-card .form-label {
+        margin-bottom: 0.2rem;
+        font-size: 0.88rem;
+    }
+    .edit-form-footer {
+        padding-top: 0.5rem !important;
+    }
+    .calendar-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        padding: 1rem;
+    }
+    .calendar-card .fc {
+        font-size: 0.85rem;
+    }
+    .calendar-card .fc .fc-toolbar-title {
+        font-size: 1.1rem;
+    }
+    .calendar-card .fc .fc-button {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+    }
+    .calendar-card .fc .fc-timegrid-slot {
+        height: 2.2rem;
+    }
+    .calendar-card .fc .fc-timegrid-slots .fc-timegrid-slot-minor {
+        border-top: 1px dashed #e0e0e0;
+    }
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+    .calendar-header h5 {
+        margin: 0;
+        font-weight: 600;
+        color: #333;
+    }
+    .calendar-header select {
+        max-width: 250px;
+    }
+    .fc-day-sat .fc-daygrid-day-number {
+        color: #d9534f;
+    }
+    .legend {
+        display: flex;
+        gap: 1rem;
+        margin-top: 0.5rem;
+        font-size: 0.8rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+    .legend-color {
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+        display: inline-block;
+    }
+    .legend-color.green { background: #28a745; }
+    .legend-color.yellow { background: #ffc107; }
+    .legend-color.cyan { background: #A8D8EA; }
+    .legend-color.red { background: #e74c3c; }
+    .legend-color.white { background: #f8f9fa; border: 1px solid #dee2e6; }
+
+    .fc-event {
+        font-size: 0.7rem;
+        padding: 1px 3px;
+        border-radius: 3px;
+    }
+
+    @@media (max-width: 992px) {
+        .split-layout {
+            flex-direction: column;
+        }
+        .split-layout .form-col,
+        .split-layout .calendar-col {
+            flex: 1 1 100%;
+        }
+    }
+</style>
+
+<div class="container-fluid px-3">
+    <div class="mb-3">
+                            <a asp-controller="Cliente" asp-action="listaCitaPorCliente"
+           class="edit-back-link" id="linkVolver">
+            <i class="fas fa-arrow-left"></i> Volver al listado
+        </a>
+    </div>
+
+    <div class="split-layout">
+
+        @* === COLUMNA IZQUIERDA: FORMULARIO === *@
+        <div class="form-col">
+            <div class="edit-form-card">
+                <div class="card-header create-header-gradient py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="icon-circle-create">
+                            <i class="fas fa-calendar-plus fa-lg"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0 fw-bold">Nueva Cita Veterinaria</h5>
+                            <small>Complete los datos para agendar la cita</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="edit-form-body">
+                    <form asp-action="nuevaCita" method="post" id="formCita">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="edit-form-grid">
+                            <div class="form-field-card">
+                                <label asp-for="CalendarioCita" class="form-label">
+                                    <i class="fas fa-calendar-alt"></i> Fecha y Hora
+                                </label>
+                                <input asp-for="CalendarioCita" type="text" class="form-control"
+                                       id="fechaHoraCita" placeholder="Seleccione fecha y hora" readonly />
+                                <span asp-validation-for="CalendarioCita" class="text-danger small"></span>
+                                <small class="text-muted d-block mt-1">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Horario: Lunes a Sábado, 8:00 AM - 6:00 PM.
+                                </small>
+                                <small class="text-info d-block mt-1">
+                                    <i class="fas fa-clock me-1"></i>
+                                    Las citas se agendan con al menos 1 día de anticipación.
+                                </small>
+                            </div>
+
+                            <div class="form-field-card">
+                                <label asp-for="Consultorio" class="form-label">
+                                    <i class="fas fa-door-open"></i> Consultorio
+                                </label>
+                                <input type="text" class="form-control" id="consultorioDisplay"
+                                       placeholder="Seleccione un veterinario primero" readonly />
+                                <input asp-for="Consultorio" type="hidden" id="consultorioHidden" />
+                                <span asp-validation-for="Consultorio" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-field-card">
+                                <label asp-for="IdVeterinario" class="form-label">
+                                    <i class="fas fa-user-md"></i> Veterinario
+                                </label>
+                                @Html.DropDownListFor(model => model.IdVeterinario,
+                                    (IEnumerable<SelectListItem>)ViewBag.veterinarios,
+                                    "(Seleccione el Veterinario)",
+                                    new { @class = "form-select" })
+                                <span asp-validation-for="IdVeterinario" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-field-card">
+                                <label asp-for="IdMascota" class="form-label">
+                                    <i class="fas fa-paw"></i> Mascota
+                                </label>
+                                @Html.DropDownListFor(model => model.IdMascota,
+                                    (IEnumerable<SelectListItem>)ViewBag.mascotas,
+                                    "(Seleccione su Mascota)",
+                                    new { @class = "form-select" })
+                                <span asp-validation-for="IdMascota" class="text-danger small"></span>
+                                <small class="text-muted d-block mt-1">
+                                    <a asp-controller="Cliente" asp-action="AgregarMascota" class="text-success">
+                                        <i class="fas fa-plus-circle me-1"></i>¿No ves tu mascota? Regístrala aquí
+                                    </a>
+                                </small>
+                            </div>
+                        </div>
+
+                        <input asp-for="IdPago" type="hidden" />
+
+                        <div class="alert alert-warning mt-3 mb-0 d-none" id="alertPagoPendiente">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-clock me-2 fa-lg"></i>
+                                <div>
+                                    <strong>Pago pendiente de confirmación:</strong>
+                                    El recepcionista debe confirmar su pago antes de agendar la cita.
+                                    <span id="estadoPagoPoll" class="d-block mt-1 small">
+                                        <i class="fas fa-spinner fa-spin me-1"></i>Esperando confirmación...
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="edit-form-footer mt-3">
+        <a asp-controller="Cliente" asp-action="listaCitaPorCliente"
+                               class="btn-cancel-edit" id="btnCancelarForm">
+                                <i class="fas fa-times me-1"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn-create-gradient" id="btnAgendar"
+                            @(Model.IdPago > 0 && ViewBag.AutPag != true ? "disabled" : "")>
+                                <i class="fas fa-calendar-check me-1"></i> Agendar Cita
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        @* === COLUMNA DERECHA: CALENDARIO === *@
+        <div class="calendar-col">
+            <div class="calendar-card">
+                <div class="calendar-header">
+                    <h5><i class="fas fa-calendar-week me-2"></i>Disponibilidad</h5>
+                </div>
+                <div id="calendar"></div>
+                <div class="legend">
+                    <span class="legend-item"><span class="legend-color green"></span> Ocupado</span>
+                    <span class="legend-item"><span class="legend-color cyan"></span> Tu reserva</span>
+                    <span class="legend-item"><span class="legend-color yellow"></span> Reservando...</span>
+                    <span class="legend-item"><span class="legend-color red"></span> Cancelada</span>
+                    <span class="legend-item"><span class="legend-color white"></span> Disponible</span>
+                    <small class="text-muted ms-auto">
+                        <i class="fas fa-sync-alt me-1"></i>Actualiza cada 10s
+                    </small>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.min.js"></script>
+
+    <script>
+        var clienteId = @(clienteId ?? 0);
+        var consultorioMapping = @Html.Raw(ViewBag.consultorioPorVet);
+        var apiBase = '';
+        var holdId = null;
+        var holdRenewTimer = null;
+        var pollTimer = null;
+        var calendar = null;
+        var currentSlotKey = null;
+
+        var rawDateStr = '';
+        var autPagPollTimer = null;
+        var pagoId = parseInt(document.getElementById('IdPago')?.value || '0');
+
+        function slotKey(dateStr, vetId) {
+            return (dateStr || '') + '|' + (vetId || '');
+        }
+
+        function actualizarConsultorio() {
+            var vetSelect = document.querySelector('select[name="IdVeterinario"]');
+            var vetId = vetSelect.value;
+            if (consultorioMapping[vetId]) {
+                document.getElementById('consultorioDisplay').value = consultorioMapping[vetId].nombre;
+                document.getElementById('consultorioHidden').value = consultorioMapping[vetId].id;
+            } else {
+                document.getElementById('consultorioDisplay').value = '';
+                document.getElementById('consultorioHidden').value = '';
+            }
+        }
+
+        function obtenerVetIdDesdeForm() {
+            var sel = document.querySelector('select[name="IdVeterinario"]');
+            return sel.value ? parseInt(sel.value) : null;
+        }
+
+        function minutosValidos(dateStr) {
+            if (!dateStr) return false;
+            var m = dateStr.split('T');
+            if (m.length !== 2) return false;
+            var min = parseInt(m[1].split(':')[1], 10);
+            return min === 0 || min === 30;
+        }
+
+        function corregirMinutos(dateStr) {
+            if (!dateStr) return;
+            var partes = dateStr.split('T');
+            if (partes.length !== 2) return;
+            var t = partes[1].split(':');
+            var h = parseInt(t[0], 10);
+            var min = parseInt(t[1], 10);
+            min = min < 30 ? 0 : 30;
+            var corregido = partes[0] + 'T' +
+                h.toString().padStart(2, '0') + ':' +
+                min.toString().padStart(2, '0');
+            var fp = document.getElementById('fechaHoraCita');
+            if (fp && fp._flatpickr) {
+                fp._flatpickr.setDate(corregido);
+            }
+        }
+
+        function verificarYCrearHold() {
+            var dateStr = rawDateStr;
+            var vetId = obtenerVetIdDesdeForm();
+
+            if (dateStr && vetId) {
+                if (!minutosValidos(dateStr)) {
+                    corregirMinutos(dateStr);
+                    return;
+                }
+
+                var newKey = slotKey(dateStr, vetId);
+                if (newKey === currentSlotKey) return;
+
+                liberarHoldActual().then(function () {
+                    currentSlotKey = newKey;
+                    crearHold(vetId, dateStr);
+                });
+            } else {
+                liberarHoldActual();
+                currentSlotKey = null;
+            }
+        }
+
+        function fetchSemana(start, end) {
+            if (!calendar) return;
+            var vetId = obtenerVetIdDesdeForm();
+            var fechaStr = start.toISOString().split('T')[0];
+            var url = apiBase + '/Cita/semana?fecha=' + fechaStr + '&ide_cli=' + clienteId;
+            if (vetId) url += '&ide_vet=' + vetId;
+
+            fetch(url)
+                .then(function (r) { return r.json(); })
+                .then(function (slots) {
+                    if (!calendar) return;
+                    var events = slots.map(function (s) {
+                        var fechaHora = new Date(s.fechaHora);
+                        var esMio = (s.idCliente === clienteId);
+                        var color, borderColor, title;
+
+                        if (s.estado === 'ocupado') {
+                            if (esMio && s.estadoCitaDB === 'C') {
+                                color = '#e74c3c';
+                                title = 'Cancelada';
+                            } else if (esMio && (s.estadoCitaDB === 'P' || s.estadoCitaDB === 'E')) {
+                                color = '#A8D8EA';
+                                title = 'Tu reserva';
+                            } else {
+                                color = '#28a745';
+                                title = 'Ocupado';
+                            }
+                            borderColor = color;
+                        } else if (s.estado === 'hold_propio') {
+                            color = '#ffc107';
+                            borderColor = color;
+                            title = 'Reservando...';
+                        } else {
+                            color = '#ffc107';
+                            borderColor = color;
+                            title = 'Reservando...';
+                        }
+
+                        var horaStr = fechaHora.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' });
+                        var tooltip = s.nombreVeterinario + ' - ' + horaStr + ' - Consultorio ' + s.consultorio;
+
+                        return {
+                            start: fechaHora,
+                            end: new Date(fechaHora.getTime() + 30 * 60000),
+                            title: title,
+                            backgroundColor: color,
+                            borderColor: borderColor,
+                            textColor: '#fff',
+                            display: 'block',
+                            extendedProps: {
+                                estado: s.estado,
+                                tooltip: tooltip,
+                                ideVet: s.idVeterinario,
+                                ideHol: s.idHold,
+                                esMio: esMio,
+                                estadoCitaDB: s.estadoCitaDB
+                            }
+                        };
+                    });
+                    calendar.removeAllEvents();
+                    calendar.addEventSource(events);
+                })
+                .catch(function (err) { console.error('Error fetching semana:', err); });
+        }
+
+        function slotEstaDisponible() {
+            if (!calendar) return false;
+            var dateStr = rawDateStr;
+            var vetId = obtenerVetIdDesdeForm();
+            if (!dateStr || !vetId) return false;
+
+            var selectedDate = new Date(dateStr);
+            var events = calendar.getEvents();
+            for (var i = 0; i < events.length; i++) {
+                var ev = events[i];
+                if (ev.extendedProps.ideVet === vetId &&
+                    selectedDate >= ev.start && selectedDate < ev.end &&
+                    ev.extendedProps.estado !== 'hold_propio') {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function crearHold(vetId, dateStr) {
+            fetch(apiBase + '/Cita/intentarHold', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    clienteId: clienteId,
+                    veterinarioId: vetId,
+                    fechaHora: dateStr
+                })
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data.success && data.ide_hol) {
+                    holdId = data.ide_hol;
+                    iniciarRenovacionHold();
+                    if (calendar) {
+                        fetchSemana(calendar.view.currentStart, calendar.view.currentEnd);
+                    }
+                } else if (data.codigo === 'OCUPADO' || data.codigo === 'HOLD_OTRO') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Horario no disponible',
+                        text: data.mensaje || 'Este horario ya no está disponible.',
+                        confirmButtonColor: '#706D60'
+                    });
+                    rawDateStr = '';
+                    document.querySelector('input[name="CalendarioCita"]').value = '';
+                    var fpElem = document.getElementById('fechaHoraCita');
+                    if (fpElem._flatpickr) fpElem._flatpickr.clear();
+                    currentSlotKey = null;
+                }
+            })
+            .catch(function (err) { console.error('Error creating hold:', err); });
+        }
+
+        function liberarHoldActual() {
+            return new Promise(function (resolve) {
+                if (holdId) {
+                    var hid = holdId;
+                    holdId = null;
+                    detenerRenovacionHold();
+                    fetch(apiBase + '/Cita/liberarHold', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ idHold: hid })
+                    })
+                    .then(function () { resolve(); })
+                    .catch(function () { resolve(); });
+                } else {
+                    resolve();
+                }
+            });
+        }
+
+        function iniciarRenovacionHold() {
+            detenerRenovacionHold();
+            holdRenewTimer = setInterval(function () {
+                if (holdId) {
+                    fetch(apiBase + '/Cita/renovarHold', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ idHold: holdId })
+                    }).catch(function (err) { console.error('Error renewing hold:', err); });
+                }
+            }, 180000);
+        }
+
+        function detenerRenovacionHold() {
+            if (holdRenewTimer) {
+                clearInterval(holdRenewTimer);
+                holdRenewTimer = null;
+            }
+        }
+
+        function verificarAutPag() {
+            if (!pagoId) return;
+            fetch(apiBase + '/Pago/VerificarAutorizacion/' + pagoId)
+                .then(function (r) { return r.json(); })
+                .then(function (autPag) {
+                    if (autPag === true) {
+                        detenerAutPagPoll();
+                        document.getElementById('alertPagoPendiente').classList.add('d-none');
+                        document.getElementById('btnAgendar').disabled = false;
+                        var topBanner = document.getElementById('topBannerPago');
+                        if (topBanner) {
+                            topBanner.className = 'alert alert-success';
+                            topBanner.innerHTML = '<i class="fas fa-check-circle me-2"></i>PAGOS : Pago confirmado, ya puede realizar su agenda de cita.';
+                        }
+                    }
+                })
+                .catch(function (err) { console.error('Error checking autorizacion:', err); });
+        }
+
+        function iniciarAutPagPoll() {
+            detenerAutPagPoll();
+            autPagPollTimer = setInterval(verificarAutPag, 10000);
+        }
+
+        function detenerAutPagPoll() {
+            if (autPagPollTimer) {
+                clearInterval(autPagPollTimer);
+                autPagPollTimer = null;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var vetFormSelect = document.querySelector('select[name="IdVeterinario"]');
+            vetFormSelect.addEventListener('change', function () {
+                actualizarConsultorio();
+                var vetId = obtenerVetIdDesdeForm();
+                if (vetId && calendar) {
+                    fetchSemana(calendar.view.currentStart, calendar.view.currentEnd);
+                } else if (calendar) {
+                    calendar.removeAllEvents();
+                }
+                verificarYCrearHold();
+            });
+
+            var fpInstance = flatpickr("#fechaHoraCita", {
+                locale: "es",
+                enableTime: true,
+                dateFormat: "Y-m-d\\TH:i",
+                altInput: true,
+                altFormat: "d \\de F \\de Y - h:i K",
+                minDate: new Date().fp_incr(1),
+                maxDate: new Date().fp_incr(90),
+                minTime: "08:00",
+                maxTime: "18:00",
+                minuteIncrement: 30,
+                disableMobile: false,
+                disable: [
+                    function (date) {
+                        return date.getDay() === 0;
+                    }
+                ],
+                onChange: function (selectedDates, dateStr, instance) {
+                    document.querySelector('input[name="CalendarioCita"]').value = dateStr;
+                    rawDateStr = dateStr;
+                    verificarYCrearHold();
+                }
+            });
+
+            calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+                initialView: 'timeGridWeek',
+                locale: 'es',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: ''
+                },
+                slotMinTime: '08:00',
+                slotMaxTime: '18:00',
+                slotDuration: '00:30',
+                allDaySlot: false,
+                hiddenDays: [0],
+                height: 'auto',
+                firstDay: 1,
+                navLinks: false,
+                selectable: false,
+                eventDidMount: function (info) {
+                    info.el.title = info.event.extendedProps.tooltip || '';
+                },
+                datesSet: function (info) {
+                    if (obtenerVetIdDesdeForm()) {
+                        fetchSemana(info.start, info.end);
+                    }
+                }
+            });
+            calendar.render();
+
+            pollTimer = setInterval(function () {
+                if (calendar) {
+                    fetchSemana(calendar.view.currentStart, calendar.view.currentEnd);
+                }
+            }, 20000);
+
+            if (typeof pagoId !== 'undefined' && pagoId) {
+                @if (Model.IdPago > 0 && ViewBag.AutPag == true)
+                {
+                    <text>
+                    document.getElementById('btnAgendar').disabled = false;
+                    </text>
+                }
+                else if (Model.IdPago > 0)
+                {
+                    <text>
+                    document.getElementById('alertPagoPendiente').classList.remove('d-none');
+                    document.getElementById('btnAgendar').disabled = true;
+                    iniciarAutPagPoll();
+                    </text>
+                }
+            }
+
+            window.addEventListener('beforeunload', function () {
+                if (holdId) {
+                    navigator.sendBeacon(apiBase + '/Cita/liberarHold',
+                        JSON.stringify({ idHold: holdId }));
+                }
+                detenerAutPagPoll();
+            });
+
+            window.addEventListener('popstate', function () {
+                liberarHoldActual();
+                detenerAutPagPoll();
+            });
+
+            document.querySelectorAll('.btn-cancel-edit, .edit-back-link').forEach(function (el) {
+                el.addEventListener('click', function () {
+                    liberarHoldActual();
+                    detenerAutPagPoll();
+                });
+            });
+
+            document.getElementById('formCita').addEventListener('submit', function (e) {
+                detenerAutPagPoll();
+                const fecha = document.getElementById('fechaHoraCita').value;
+                const consultorio = document.getElementById('consultorioHidden').value;
+                const consultorioDisplay = document.getElementById('consultorioDisplay').value;
+                var vetSel = document.querySelector('select[name="IdVeterinario"]');
+                const veterinario = vetSel.value;
+                var vetText = vetSel.options[vetSel.selectedIndex].text;
+                var mascSel = document.querySelector('select[name="IdMascota"]');
+                const mascota = mascSel.value;
+                var mascText = mascSel.options[mascSel.selectedIndex].text;
+
+                if (!fecha || !consultorio || !veterinario || !mascota) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Campos incompletos',
+                        text: 'Por favor complete todos los campos requeridos.',
+                        confirmButtonColor: '#706D60'
+                    });
+                    return false;
+                }
+
+                const fechaSeleccionada = new Date(fecha);
+                const fechaActual = new Date();
+                if (fechaSeleccionada < fechaActual) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Fecha inválida',
+                        text: 'No puede seleccionar una fecha u hora pasada.',
+                        confirmButtonColor: '#706D60'
+                    });
+                    return false;
+                }
+
+                if (!slotEstaDisponible()) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Horario no disponible',
+                        text: 'Este horario ya fue reservado por otro cliente.',
+                        confirmButtonColor: '#706D60'
+                    });
+                    return false;
+                }
+
+                e.preventDefault();
+                Swal.fire({
+                    title: '¿Agendar cita?',
+                    html: '<div class="text-start"><p>Confirme los datos:</p>' +
+                          '<ul class="list-unstyled small">' +
+                          '<li><i class="fas fa-calendar me-2 text-primary"></i><strong>Fecha:</strong> ' + fecha + '</li>' +
+                          '<li><i class="fas fa-user-md me-2 text-primary"></i><strong>Veterinario:</strong> ' + vetText + '</li>' +
+                          '<li><i class="fas fa-paw me-2 text-primary"></i><strong>Mascota:</strong> ' + mascText + '</li>' +
+                          '<li><i class="fas fa-door-open me-2 text-primary"></i><strong>Consultorio:</strong> ' + consultorioDisplay + '</li>' +
+                          '</ul><small class="text-muted"><i class="fas fa-info-circle me-1"></i>Una vez agendada, el horario quedará reservado.</small></div>',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#574C52',
+                    cancelButtonColor: '#94827F',
+                    confirmButtonText: '<i class="fas fa-calendar-check me-1"></i> Sí, agendar',
+                    cancelButtonText: '<i class="fas fa-times me-1"></i> Cancelar',
+                    reverseButtons: true
+                }).then(function (result) {
+                    if (!result.isConfirmed) return;
+
+                    var btn = document.getElementById('btnAgendar');
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Verificando...';
+                    btn.disabled = true;
+
+                    fetch(apiBase + '/Cita/intentarHold', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            clienteId: clienteId,
+                            veterinarioId: parseInt(veterinario),
+                            fechaHora: rawDateStr || fecha
+                        })
+                    })
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        if (data.success && data.ide_hol) {
+                            fetch(apiBase + '/Cita/liberarHold', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ idHold: data.ide_hol }),
+                                keepalive: true
+                            }).catch(function () {}).finally(function () {
+                                holdId = null;
+                                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Agendando...';
+                                document.getElementById('formCita').submit();
+                            });
+                        } else {
+                            btn.innerHTML = '<i class="fas fa-calendar-check me-1"></i> Agendar Cita';
+                            btn.disabled = false;
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Horario ocupado',
+                                text: data.mensaje || 'Este horario acaba de ser ocupado. Seleccione otro.',
+                                confirmButtonColor: '#706D60'
+                            });
+                            rawDateStr = '';
+                            currentSlotKey = null;
+                            document.querySelector('input[name="CalendarioCita"]').value = '';
+                            var fpElem = document.getElementById('fechaHoraCita');
+                            if (fpElem._flatpickr) fpElem._flatpickr.clear();
+                        }
+                    })
+                    .catch(function () {
+                        btn.innerHTML = '<i class="fas fa-calendar-check me-1"></i> Agendar Cita';
+                        btn.disabled = false;
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'No se pudo verificar la disponibilidad. Intente de nuevo.',
+                            confirmButtonColor: '#706D60'
+                        });
+                    });
+                });
+            });
+        });
+    </script>
+}

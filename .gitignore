@@ -1,0 +1,26 @@
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+.idea/
+.vs/
+# Portfolio
+Portfolio_mivet.md
+
+# Credenciales y configuración sensible
+secure.env
+*CREDENCIALES*
+*credenciales*
+
+# Scripts de BD personales
+/DSWEB_MivetOnline_BD.txt
+/DSWEB_MivetOnline_BD_SP.txt
+/DSWEB_MivetOnline_Script.txt
+appsettings.Development.json
+appsettings.Local.json
+**/appsettings*.json
+!appsettings.json
+*.user
+*.suo
+secrets.json

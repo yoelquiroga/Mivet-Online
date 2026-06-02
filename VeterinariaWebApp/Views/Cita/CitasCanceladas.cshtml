@@ -1,0 +1,84 @@
+﻿@model IEnumerable<VeterinariaWebApp.Models.Cita.Cita>
+
+@{
+    ViewData["Title"] = "Citas Canceladas";
+    Layout = "~/Views/Shared/_LayoutRecepcionista.cshtml";
+}
+
+<h1>Citas Canceladas</h1>
+<hr>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>@Html.DisplayNameFor(model => model.IdCita)</th>
+                        <th>@Html.DisplayNameFor(model => model.CalendarioCita)</th>
+                        <th>@Html.DisplayNameFor(model => model.Consultorio)</th>
+                        <th>@Html.DisplayNameFor(model => model.NombreVeterinario)</th>
+                        <th>@Html.DisplayNameFor(model => model.NombreMascota)</th>
+                        <th>@Html.DisplayNameFor(model => model.MontoPago)</th>
+                        <th>@Html.DisplayNameFor(model => model.EstadoCita)</th>
+                        <th>ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.IdCita)</td>
+                            <td>@Html.DisplayFor(modelItem => item.CalendarioCita)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Consultorio)</td>
+                            <td>@Html.DisplayFor(modelItem => item.NombreVeterinario)</td>
+                            <td>@Html.DisplayFor(modelItem => item.NombreMascota)</td>
+                            <td>@Html.DisplayFor(modelItem => item.MontoPago)</td>
+                            <td>
+                                <span class="badge badge-pill badge-danger">@item.EstadoDescripcion</span>
+                            </td>
+                            <td>
+                                <a href="@Url.Action("Reagendar", "Cita", new { id = item.IdCita })"
+                                   class="btn btn-warning btn-sm btn-reagendar"
+                                   data-id="@item.IdCita"
+                                   style="opacity: 0.5; pointer-events: none;">
+                                    <i class="fas fa-calendar-plus"></i> Reagendar
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function actualizarBotonesReagendar() {
+            const ahora = new Date();
+            const hora = ahora.getHours();
+            const min = ahora.getMinutes();
+            const totalMinutos = hora * 60 + min;
+
+            // Rango: 4:30 PM (16:30 = 990 min) a 5:31 PM (17:31 = 1051 min)
+            const habilitado = totalMinutos >= 990 && totalMinutos < 1051;
+
+            document.querySelectorAll('.btn-reagendar').forEach(btn => {
+                if (habilitado) {
+                    btn.style.opacity = '1';
+                    btn.style.pointerEvents = 'auto';
+                    btn.style.cursor = 'pointer';
+                    btn.title = 'Reagendar cita';
+                } else {
+                    btn.style.opacity = '0.5';
+                    btn.style.pointerEvents = 'none';
+                    btn.title = 'Disponible de 4:30 PM a 5:31 PM';
+                }
+            });
+        }
+
+        actualizarBotonesReagendar();
+        setInterval(actualizarBotonesReagendar, 30000); // Verificar cada 30s
+    </script>
+}

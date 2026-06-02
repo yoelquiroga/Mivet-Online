@@ -1,0 +1,371 @@
+﻿@{
+    ViewData["Title"] = "Inicio - Cliente";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+    var nombre = Context.Session.GetString("NombreCliente") ?? "Cliente";
+}
+
+<div class="client-dashboard">
+
+    @* ─── WELCOME ─── *@
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h4 class="mb-1" style="color:#1F2937;font-weight:800;">
+                <i class="fas fa-paw mr-2" style="color:#F97316;"></i>¡Hola, @nombre!
+            </h4>
+            <p class="mb-0" style="color:#6B7280;font-size:0.9rem;">
+                <i class="fas fa-dog mr-1" style="color:#F97316;"></i>Panel de Cliente
+            </p>
+        </div>
+        <div>
+            <span style="display:inline-block;padding:0.3rem 0.8rem;border-radius:20px;background:#FEF2E7;color:#F97316;font-size:0.8rem;font-weight:700;">
+                <i class="fas fa-calendar-day mr-1"></i>@DateTime.Now.ToString("dddd, dd MMM", new System.Globalization.CultureInfo("es-PE")).ToUpper()
+            </span>
+        </div>
+    </div>
+
+    @* ─── SECTION A: KPIs 2x2 + Gastos Chart ─── *@
+    <div class="row mb-4">
+        <div class="col-lg-8 mb-3 mb-lg-0">
+            <div class="row">
+                <div class="col-6 mb-3">
+                    <div class="client-kpi-card">
+                        <div class="client-kpi-icon"><i class="fas fa-calendar-check"></i></div>
+                        <div>
+                            <div class="client-kpi-label">Total Citas</div>
+                            <div class="client-kpi-value">@ViewBag.TotalCitas</div>
+                            <div class="client-kpi-sub">Todas tus citas</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 mb-3">
+                    <div class="client-kpi-card">
+                        <div class="client-kpi-icon"><i class="fas fa-clock"></i></div>
+                        <div>
+                            <div class="client-kpi-label">Próximas</div>
+                            <div class="client-kpi-value">@ViewBag.ProximasCitasCount</div>
+                            <div class="client-kpi-sub">Citas pendientes</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 mb-3">
+                    <div class="client-kpi-card">
+                        <div class="client-kpi-icon"><i class="fas fa-paw"></i></div>
+                        <div>
+                            <div class="client-kpi-label">Mis Mascotas</div>
+                            <div class="client-kpi-value">@ViewBag.TotalMascotas</div>
+                            <div class="client-kpi-sub">Registradas</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 mb-3">
+                    <div class="client-glass-card d-flex align-items-center" style="min-height:100px;">
+                        <div class="client-glass-icon mr-3"><i class="fas fa-coins"></i></div>
+                        <div>
+                            <div class="client-glass-label">Total Gastado</div>
+                            <div class="client-glass-value">S/ @ViewBag.TotalGastado.ToString("N2")</div>
+                            <div class="client-glass-sub">En todas tus consultas</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="client-card h-100">
+                <div class="client-card-header">
+                    <h5 class="client-card-title"><i class="fas fa-chart-bar mr-2" style="color:#F97316;"></i>Gastos por Mes</h5>
+                </div>
+                <div class="client-card-body">
+                    <div class="client-chart-wrapper">
+                        <canvas id="gastosChart"></canvas>
+                        <div class="client-chart-empty" id="emptyGastos">
+                            <i class="fas fa-chart-bar"></i>
+                            <p>Sin datos de gastos</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ─── SECTION B: Calendar + Próximas Citas ─── *@
+    <div class="row mb-4">
+        <div class="col-lg-7 mb-3 mb-lg-0">
+            <div class="client-card">
+                <div class="client-card-header">
+                    <h5 class="client-card-title"><i class="fas fa-calendar-alt mr-2" style="color:#F97316;"></i>Mis Citas</h5>
+                    <a href="@Url.Action("listaCitaPorCliente", "Cliente")" class="client-card-link">Ver todo <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+                <div class="client-card-body">
+                    <div class="client-calendar-wrapper" id="clienteCalendar"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="client-card h-100">
+                <div class="client-card-header">
+                    <h5 class="client-card-title"><i class="fas fa-list mr-2" style="color:#F97316;"></i>Próximas Citas</h5>
+                </div>
+                <div class="client-card-body" id="proximasCitasContainer">
+                    <div class="client-loading"><i class="fas fa-spinner"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ─── SECTION C: Donut + Última Atención ─── *@
+    <div class="row">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+            <div class="client-card h-100">
+                <div class="client-card-header">
+                    <h5 class="client-card-title"><i class="fas fa-chart-pie mr-2" style="color:#F97316;"></i>Distribución de Citas</h5>
+                </div>
+                <div class="client-card-body">
+                    <div class="client-chart-wrapper" style="position:relative;">
+                        <canvas id="statusChart"></canvas>
+                        <div class="client-donut-center" id="donutCenter">
+                            <div class="client-donut-center-value">@ViewBag.TotalCitas</div>
+                            <div class="client-donut-center-label">Total</div>
+                        </div>
+                        <div class="client-chart-empty" id="emptyStatus">
+                            <i class="fas fa-chart-pie"></i>
+                            <p>Sin datos disponibles</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="client-card h-100">
+                <div class="client-card-header">
+                    <h5 class="client-card-title"><i class="fas fa-notes-medical mr-2" style="color:#F97316;"></i>Última Atención</h5>
+                </div>
+                <div class="client-card-body" id="ultimaAtencionContainer">
+                    <div class="client-loading"><i class="fas fa-spinner"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var todasCitas = @Html.Raw(ViewBag.TodasCitasJSON ?? "[]");
+        var gastosPorMes = @Html.Raw(ViewBag.GastosPorMesJSON ?? "[]");
+        var distribucion = @Html.Raw(ViewBag.DistribucionJSON ?? "{}");
+        var proximasCitasArr = @Html.Raw(ViewBag.ProximasCitasJSON ?? "[]");
+        var ultimaAtencion = @Html.Raw(ViewBag.UltimaAtencionJSON ?? "null");
+
+        // ─── Render Próximas Citas ───
+        (function renderProximas() {
+            var container = document.getElementById('proximasCitasContainer');
+            if (!container) return;
+            if (!proximasCitasArr || proximasCitasArr.length === 0) {
+                container.innerHTML = '<div class="client-appt-empty"><i class="fas fa-calendar-check"></i><p>No tienes citas pr\u00f3ximas</p></div>';
+                return;
+            }
+            var estados = { P: 'Pendiente', E: 'En Atenci\u00f3n', A: 'Atendida', C: 'Cancelada' };
+            var badges = { P: 'client-badge-pendiente', E: 'client-badge-atencion', A: 'client-badge-atendida', C: 'client-badge-cancelada' };
+            var html = '';
+            for (var i = 0; i < proximasCitasArr.length; i++) {
+                var c = proximasCitasArr[i];
+                var fecha = new Date(c.cal_cit);
+                var hora = fecha.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
+                html += '<div class="client-appt-item">' +
+                    '<div class="client-appt-time">' + hora + '</div>' +
+                    '<div class="client-appt-info">' +
+                        '<p class="client-appt-pet">' + c.mascota + '</p>' +
+                        '<p class="client-appt-vet"><i class="fas fa-user-md mr-1"></i>' + c.veterinario + '</p>' +
+                    '</div>' +
+                    '<span class="client-appt-badge ' + (badges[c.est_cit] || '') + '">' + (estados[c.est_cit] || c.est_cit) + '</span>' +
+                '</div>';
+            }
+            container.innerHTML = html;
+        })();
+
+        // ─── Render Última Atención ───
+        (function renderUltima() {
+            var container = document.getElementById('ultimaAtencionContainer');
+            if (!container) return;
+            if (!ultimaAtencion) {
+                container.innerHTML = '<div class="client-last-attention-empty"><i class="fas fa-notes-medical"></i><p>A\u00fan no tienes atenciones registradas</p></div>';
+                return;
+            }
+            var fecha = new Date(ultimaAtencion.fecha_atencion || ultimaAtencion.cal_cit);
+            var fechaStr = fecha.toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' });
+            container.innerHTML = '<div class="client-last-attention">' +
+                '<div class="client-last-pet"><i class="fas fa-paw mr-2" style="color:#F97316;"></i>' + ultimaAtencion.mascota + '</div>' +
+                '<div class="client-last-date"><i class="fas fa-calendar mr-1"></i>' + fechaStr + ' &middot; ' + ultimaAtencion.veterinario + '</div>' +
+                (ultimaAtencion.diagnostico ? '<div class="client-last-detail"><strong>Diagn\u00f3stico:</strong> ' + ultimaAtencion.diagnostico + '</div>' : '') +
+                (ultimaAtencion.tratamiento ? '<div class="client-last-detail"><strong>Tratamiento:</strong> ' + ultimaAtencion.tratamiento + '</div>' : '') +
+                '<div class="client-last-monto">S/ ' + parseFloat(ultimaAtencion.mon_pag).toFixed(2) + '</div>' +
+            '</div>';
+        })();
+
+        // ─── FullCalendar ───
+        (function initCalendar() {
+            try {
+                var el = document.getElementById('clienteCalendar');
+                if (!el || typeof FullCalendar === 'undefined') return;
+                var events = [];
+                for (var i = 0; i < todasCitas.length; i++) {
+                    var c = todasCitas[i];
+                    var f = new Date(c.cal_cit);
+                    events.push({
+                        id: c.ide_cit,
+                        title: c.mascota,
+                        start: f.toISOString(),
+                        allDay: true,
+                        className: 'client-cal-event',
+                        extendedProps: { mascota: c.mascota, veterinario: c.veterinario, estado: c.est_cit, monto: c.mon_pag }
+                    });
+                }
+                var cal = new FullCalendar.Calendar(el, {
+                    initialView: 'dayGridMonth',
+                    locale: 'es',
+                    firstDay: 1,
+                    height: 'auto',
+                    dayMaxEvents: 2,
+                    headerToolbar: { left: 'prev', center: 'title', right: 'next' },
+                    events: events,
+                    eventDidMount: function(info) {
+                        info.el.style.cursor = 'pointer';
+                    },
+                    eventClick: function(info) {
+                        var p = info.event.extendedProps;
+                        var estadoMap = { P: 'Pendiente', E: 'En Atenci\u00f3n', A: 'Atendida', C: 'Cancelada' };
+                        Swal.fire({
+                            title: p.mascota,
+                            html: '<div style="text-align:left;">' +
+                                '<p><strong>Veterinario:</strong> ' + p.veterinario + '</p>' +
+                                '<p><strong>Estado:</strong> ' + (estadoMap[p.estado] || p.estado) + '</p>' +
+                                (p.monto ? '<p><strong>Monto:</strong> S/ ' + parseFloat(p.monto).toFixed(2) + '</p>' : '') +
+                            '</div>',
+                            icon: 'info', confirmButtonColor: '#F97316', confirmButtonText: 'Cerrar',
+                            background: '#FDFDFD', color: '#1F2937'
+                        });
+                    }
+                });
+                cal.render();
+            } catch (e) { console.log('Calendar:', e.message); }
+        })();
+
+        // ─── Chart.js v2 defaults ───
+        try {
+            if (typeof Chart !== 'undefined') {
+                Chart.defaults.global.defaultFontFamily = "'Segoe UI', Arial, sans-serif";
+                Chart.defaults.global.defaultFontColor = '#4B5563';
+            }
+        } catch (e) { }
+
+        // ─── Gastos Bar Chart ───
+        (function initGastos() {
+            try {
+                var canvas = document.getElementById('gastosChart');
+                if (!canvas || typeof Chart === 'undefined') return;
+                var labels = gastosPorMes.map(function(d) { return d.mes; });
+                var data = gastosPorMes.map(function(d) { return d.total; });
+                var total = data.reduce(function(a, b) { return a + b; }, 0);
+                if (total === 0) {
+                    document.getElementById('emptyGastos').style.display = 'block';
+                    canvas.style.display = 'none';
+                    return;
+                }
+                var ctx = canvas.getContext('2d');
+                var gradient = ctx.createLinearGradient(0, 0, 0, 280);
+                gradient.addColorStop(0, '#F97316');
+                gradient.addColorStop(1, '#FDBA74');
+                new Chart(canvas, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: gradient,
+                            borderWidth: 0,
+                            barPercentage: 0.5,
+                            categoryPercentage: 0.7
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        legend: { display: false },
+                        tooltips: {
+                            enabled: true,
+                            backgroundColor: 'rgba(44,62,80,0.9)',
+                            titleFontColor: '#ffffff',
+                            bodyFontColor: '#ffffff',
+                            cornerRadius: 6,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(item, data) {
+                                    var v = data.datasets[0].data[item.index];
+                                    return 'S/ ' + parseFloat(v).toFixed(2);
+                                }
+                            }
+                        },
+                        scales: {
+                            xAxes: [{
+                                gridLines: { display: false },
+                                ticks: { fontColor: '#9CA3AF', fontSize: 10 }
+                            }],
+                            yAxes: [{
+                                gridLines: { display: false },
+                                ticks: { fontColor: '#9CA3AF', fontSize: 10, callback: function(v) { return 'S/' + v; } },
+                                beginAtZero: true
+                            }]
+                        }
+                    }
+                });
+            } catch (e) { console.log('Gastos chart:', e.message); }
+        })();
+
+        // ─── Status Donut ───
+        (function initStatus() {
+            try {
+                var canvas = document.getElementById('statusChart');
+                if (!canvas || typeof Chart === 'undefined') return;
+                var labels = Object.keys(distribucion);
+                var data = Object.values(distribucion);
+                var total = data.reduce(function(a, b) { return a + b; }, 0);
+                if (total === 0) {
+                    document.getElementById('emptyStatus').style.display = 'block';
+                    document.getElementById('donutCenter').style.display = 'none';
+                    canvas.style.display = 'none';
+                    return;
+                }
+                new Chart(canvas, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: ['#F97316', '#FDBA74', '#34D399', '#9CA3AF'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        cutoutPercentage: 75,
+                        legend: {
+                            position: 'bottom',
+                            labels: { padding: 14, usePointStyle: true, fontColor: '#4B5563', fontSize: 11 }
+                        },
+                        tooltips: {
+                            backgroundColor: 'rgba(44,62,80,0.9)',
+                            titleFontColor: '#ffffff',
+                            bodyFontColor: '#ffffff',
+                            cornerRadius: 6,
+                            callbacks: {
+                                label: function(item, data) {
+                                    var val = data.datasets[0].data[item.index];
+                                    var pct = ((val / total) * 100).toFixed(1);
+                                    return data.labels[item.index] + ': ' + val + ' (' + pct + '%)';
+                                }
+                            }
+                        }
+                    }
+                });
+            } catch (e) { console.log('Status chart:', e.message); }
+        })();
+    </script>
+}

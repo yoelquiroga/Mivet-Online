@@ -1,0 +1,215 @@
+﻿@model VeterinariaWebApp.Models.Cita.CitaO
+
+@{
+    ViewData["Title"] = "Actualizar Cita";
+    Layout = "~/Views/Shared/_LayoutRecepcionista.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_green.css">
+
+<div class="container-fluid">
+
+    <div class="mb-3">
+        <a asp-controller="Cita" asp-action="CitasPendientes" class="edit-back-link">
+            <i class="fas fa-arrow-left"></i> Volver al listado
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+            <div class="edit-form-card">
+                <div class="card-header edit-header-gradient py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="icon-circle-edit">
+                            <i class="fas fa-calendar-alt fa-lg"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0 fw-bold">Editando: Cita #@Model.IdCita</h5>
+                            <small>Modifique los datos que desee actualizar</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="edit-form-body">
+                    <form asp-action="actualizarCitaPost" method="post" id="formCita">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <input asp-for="IdCita" hidden />
+                        <input asp-for="IdPago" hidden />
+
+                        <div class="edit-form-grid">
+                            <div class="form-field-card">
+                                <label asp-for="CalendarioCita" class="form-label">
+                                    <i class="fas fa-calendar-alt"></i> Fecha y Hora
+                                </label>
+                                <input asp-for="CalendarioCita" type="text" class="form-control"
+                                       id="fechaHoraCita" placeholder="Seleccione fecha y hora" readonly
+                                       value="@Model.CalendarioCita.ToString("yyyy-MM-ddTHH:mm")" />
+                                <span asp-validation-for="CalendarioCita" class="text-danger small"></span>
+                                <small class="text-muted d-block mt-1">
+                                    <i class="fas fa-info-circle me-1"></i>Horario: Lunes a Sábado, 8:00 AM - 6:00 PM
+                                </small>
+                                <small class="text-info d-block mt-1">
+                                    <i class="fas fa-clock me-1"></i>
+                                    Las citas se agendan con al menos 1 día de anticipación.
+                                </small>
+                            </div>
+
+                            <div class="form-field-card">
+                                <label asp-for="Consultorio" class="form-label">
+                                    <i class="fas fa-door-open"></i> Consultorio
+                                </label>
+                                <input type="text" class="form-control" id="consultorioDisplay"
+                                       placeholder="Seleccione un veterinario primero" readonly />
+                                <input asp-for="Consultorio" type="hidden" id="consultorioHidden" />
+                                <span asp-validation-for="Consultorio" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-field-card">
+                                <label asp-for="IdVeterinario" class="form-label">
+                                    <i class="fas fa-user-md"></i> Veterinario
+                                </label>
+                                @Html.DropDownListFor(model => model.IdVeterinario,
+                                    (IEnumerable<SelectListItem>)ViewBag.veterinarios,
+                                    "(Seleccione el Veterinario)",
+                                    new { @class = "form-select" })
+                                <span asp-validation-for="IdVeterinario" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-field-card">
+                                <label asp-for="IdMascota" class="form-label">
+                                    <i class="fas fa-paw"></i> Mascota
+                                </label>
+                                @Html.DropDownListFor(model => model.IdMascota,
+                                    (IEnumerable<SelectListItem>)ViewBag.mascotas,
+                                    "(Seleccione la Mascota)",
+                                    new { @class = "form-select" })
+                                <span asp-validation-for="IdMascota" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="edit-form-footer">
+                            <a asp-controller="Cita" asp-action="CitasPendientes" class="btn-cancel-edit">
+                                <i class="fas fa-times me-1"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn-save-gradient">
+                                <i class="fas fa-save me-1"></i> Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+
+    <script>
+        var consultorioMapping = @Html.Raw(ViewBag.consultorioPorVet);
+
+        function actualizarConsultorio() {
+            var vetSelect = document.querySelector('select[name="IdVeterinario"]');
+            var vetId = vetSelect.value;
+            if (consultorioMapping[vetId]) {
+                document.getElementById('consultorioDisplay').value = consultorioMapping[vetId].nombre;
+                document.getElementById('consultorioHidden').value = consultorioMapping[vetId].id;
+            } else {
+                document.getElementById('consultorioDisplay').value = '';
+                document.getElementById('consultorioHidden').value = '';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var vetSelect = document.querySelector('select[name="IdVeterinario"]');
+            vetSelect.addEventListener('change', actualizarConsultorio);
+            actualizarConsultorio();
+
+            flatpickr("#fechaHoraCita", {
+                locale: "es",
+                enableTime: true,
+                dateFormat: "Y-m-d\\TH:i",
+                altInput: true,
+                altFormat: "d \\de F \\de Y - h:i K",
+                minDate: new Date().fp_incr(1),
+                maxDate: new Date().fp_incr(90),
+                minTime: "08:00",
+                maxTime: "18:00",
+                minuteIncrement: 30,
+                disableMobile: false,
+                disable: [
+                    function(date) {
+                        return date.getDay() === 0;
+                    }
+                ],
+                onChange: function(selectedDates, dateStr, instance) {
+                    document.querySelector('input[name="CalendarioCita"]').value = dateStr;
+                }
+            });
+
+            document.getElementById('formCita').addEventListener('submit', function(e) {
+                const fecha = document.getElementById('fechaHoraCita').value;
+                const consultorio = document.getElementById('consultorioHidden').value;
+                const consultorioDisplay = document.getElementById('consultorioDisplay').value;
+                const veterinario = document.querySelector('select[name="IdVeterinario"]').value;
+                const mascota = document.querySelector('select[name="IdMascota"]').value;
+
+                if (!fecha || !consultorio || !veterinario || !mascota) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Campos incompletos',
+                        text: 'Por favor complete todos los campos requeridos.',
+                        confirmButtonColor: '#f39c12'
+                    });
+                    return false;
+                }
+
+                const fechaSeleccionada = new Date(fecha);
+                const fechaActual = new Date();
+
+                if (fechaSeleccionada < fechaActual) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Fecha inválida',
+                        text: 'No puede seleccionar una fecha u hora pasada.',
+                        confirmButtonColor: '#f39c12'
+                    });
+                    return false;
+                }
+
+                e.preventDefault();
+                Swal.fire({
+                    title: '¿Guardar cambios?',
+                    html: `
+                        <div class="text-start">
+                            <p>Confirme la modificación de la cita:</p>
+                            <ul class="list-unstyled small">
+                                <li><i class="fas fa-calendar me-2 text-primary"></i><strong>Fecha:</strong> ${fecha}</li>
+                                <li><i class="fas fa-door-open me-2 text-primary"></i><strong>Consultorio:</strong> ${consultorioDisplay}</li>
+                            </ul>
+                        </div>
+                    `,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#f39c12',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: '<i class="fas fa-save me-1"></i> Sí, guardar',
+                    cancelButtonText: '<i class="fas fa-times me-1"></i> Cancelar',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.querySelector('.btn-save-gradient').innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Guardando...';
+                        document.querySelector('.btn-save-gradient').disabled = true;
+                        e.target.submit();
+                    }
+                });
+            });
+        });
+    </script>
+}

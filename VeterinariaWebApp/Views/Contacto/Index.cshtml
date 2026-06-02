@@ -1,0 +1,158 @@
+@model List<VeterinariaWebApp.Models.Contacto.Contacto>
+@{
+    ViewData["Title"] = "Mensajes de Contacto";
+    Layout = "~/Views/Shared/_LayoutRecepcionista.cshtml";
+    var contadores = ViewBag.Contadores as VeterinariaWebApp.Models.Contacto.ContactoContadores;
+}
+
+<h1 class="h3 mb-2 text-gray-800">
+    <i class="fas fa-envelope mr-2"></i>Mensajes de Contacto
+</h1>
+<p class="mb-4">Gestión de mensajes enviados desde el formulario de contacto público.</p>
+
+<div class="row mb-4">
+    <div class="col-xl-2 col-md-4 mb-3">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@(contadores?.Total ?? 0)</div>
+                    </div>
+                    <div class="col-auto"><i class="fas fa-envelope fa-2x text-gray-300"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-4 mb-3">
+        <div class="card border-left-danger shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Nuevos</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@(contadores?.Nuevos ?? 0)</div>
+                    </div>
+                    <div class="col-auto"><i class="fas fa-envelope-open fa-2x text-gray-300"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-4 mb-3">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Leídos</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@(contadores?.Leidos ?? 0)</div>
+                    </div>
+                    <div class="col-auto"><i class="fas fa-eye fa-2x text-gray-300"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-4 mb-3">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Respondidos</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@(contadores?.Respondidos ?? 0)</div>
+                    </div>
+                    <div class="col-auto"><i class="fas fa-reply fa-2x text-gray-300"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-4 mb-3">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Pendiente Email</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@(contadores?.PendienteEmail ?? 0)</div>
+                    </div>
+                    <div class="col-auto"><i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">Bandeja de Mensajes</h6>
+        <div>
+            <button class="btn btn-sm btn-outline-secondary filter-btn active" data-filter="Todos">Todos</button>
+            <button class="btn btn-sm btn-outline-danger filter-btn" data-filter="Nuevo">Nuevos</button>
+            <button class="btn btn-sm btn-outline-warning filter-btn" data-filter="Leído">Leídos</button>
+            <button class="btn btn-sm btn-outline-success filter-btn" data-filter="Respondido">Respondidos</button>
+            <button class="btn btn-sm btn-outline-info filter-btn" data-filter="Pendiente Email">Pendientes</button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="contactoTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Servicio</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr data-estado="@item.estado_con">
+                            <td>@item.fecha_con.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@item.NombreCompleto</td>
+                            <td>@item.email_con</td>
+                            <td>@item.servicio_con</td>
+                            <td>
+                                <span class="badge @item.BadgeColor px-3 py-2">
+                                    @if (item.estado_con == "Nuevo") { <text>🔴 Nuevo</text> }
+                                    else if (item.estado_con == "Leído") { <text>🟡 Leído</text> }
+                                    else if (item.estado_con == "Respondido") { <text>🟢 Respondido</text> }
+                                    else if (item.estado_con == "Pendiente Email") { <text>🟠 Pendiente Email</text> }
+                                    else { @item.estado_con }
+                                </span>
+                            </td>
+                            <td>
+                                <a asp-action="Detalle" asp-route-id="@item.id_con" class="btn btn-action-view btn-sm">
+                                    <i class="fas fa-eye"></i> Ver
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var table = $('#contactoTable').DataTable({
+                order: [[0, 'desc']],
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+                }
+            });
+
+            $('.filter-btn').on('click', function () {
+                $('.filter-btn').removeClass('active');
+                $(this).addClass('active');
+
+                var filter = $(this).data('filter');
+                if (filter === 'Todos') {
+                    table.column(4).search('').draw();
+                } else {
+                    table.column(4).search('^' + filter + '$', true, false).draw();
+                }
+            });
+        });
+    </script>
+}

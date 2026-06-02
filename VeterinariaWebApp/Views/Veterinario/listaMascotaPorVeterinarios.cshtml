@@ -1,0 +1,68 @@
+﻿@model IEnumerable<VeterinariaWebApp.Models.Usuario.Veterinario.MascotaPorVeterinario>
+
+@{
+    ViewData["Title"] = "Mascotas Atendidas";
+    Layout = "~/Views/Shared/_LayoutVeterinario.cshtml";
+    var veterinarioId = Context.Session.GetInt32("VeterinarioId");
+}
+
+<div class="card modern-card mb-4">
+    <div class="card-header">
+        <h6 style="color: #575252;"><i class="fas fa-paw me-2" style="color: #575252;"></i>Mascotas Atendidas</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ID Mascota</th>
+                        <th>Mascota</th>
+                        <th>Especie</th>
+                        <th>Raza</th>
+                        <th>Doc. Dueño</th>
+                        <th>Total Citas</th>
+                        <th>ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.ide_mas)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Mascota)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Especie)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Raza)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Doc_Dueño)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Total_Citas)</td>
+                            <td class="text-center">
+                                <a href="@Url.Action("GenerarPDFMascotasAtendidas", "Veterinario", new { ide_usr = veterinarioId })"
+                                   class="btn btn-danger btn-sm export-btn">
+                                    EXPORTAR
+                                </a>
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .export-btn {
+        background-color: #dc3545 !important;
+        border: none;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        padding: 6px 14px;
+        transition: all 0.3s ease;
+        box-shadow: 0 3px 6px rgba(220, 53, 69, 0.3);
+    }
+
+        .export-btn:hover {
+            background-color: #b02a37 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(220, 53, 69, 0.5);
+        }
+</style>

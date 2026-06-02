@@ -1,0 +1,290 @@
+﻿@model VeterinariaWebApp.Models.Pago.PagoO
+
+@{
+    ViewData["Title"] = "Crear Pago";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+    var clienteId = Context.Session.GetInt32("ClienteId");
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-6">
+            <div class="edit-form-card">
+                <div class="card-header create-header-gradient py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="icon-circle-create">
+                            <i class="fas fa-money-bill-wave fa-lg"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0 fw-bold">Ingresar Datos de Pago</h5>
+                            <small>Complete la información para procesar el pago</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="edit-form-body">
+                    <form asp-action="Crear" method="post" id="formPago">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="edit-form-grid">
+                            <div class="form-field-card">
+                                <label asp-for="MontoPago" class="form-label">
+                                    <i class="fas fa-hand-holding-usd"></i> Monto a Pagar
+                                </label>
+                                <input asp-for="MontoPago" class="form-control" value="30.00" readonly />
+                                <span asp-validation-for="MontoPago" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-field-card">
+                                <label asp-for="TipoPago" class="form-label">
+                                    <i class="fas fa-credit-card"></i> Método de Pago
+                                </label>
+                                @Html.DropDownListFor(model => model.TipoPago,
+                                    (SelectList)ViewBag.tipoPagos, "(Seleccione el método de pago)",
+                                    new { @class = "form-select", @id = "tipoPagoSelect" })
+                                <span asp-validation-for="TipoPago" class="text-danger small"></span>
+                            </div>
+
+                            <div id="extraFields" class="full-width"></div>
+                        </div>
+
+                        <div class="edit-form-footer">
+                            <a asp-controller="Cliente" asp-action="listaCitaPorCliente"
+                               class="btn-cancel-edit">
+                                <i class="fas fa-times me-1"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn-create-gradient" id="btnPagar">
+                                <i class="fas fa-arrow-right me-1"></i> Continuar
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="mt-4 p-3 bg-light rounded border">
+                        <h6 class="fw-bold mb-3"><i class="fas fa-info-circle me-2"></i>Datos de contacto para pago</h6>
+                        <div class="row g-2 small">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-2">
+                                    <img src="/img/icons/yape.png" alt="Yape" style="width:28px;height:28px;margin-right:8px;" />
+                                    <span><strong>Yape:</strong> 963258741</span>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <img src="/img/icons/plin.png" alt="Plin" style="width:28px;height:28px;margin-right:8px;" />
+                                    <span><strong>Plin:</strong> 987456321</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-2">
+                                    <img src="/img/icons/whatsapp.png" alt="WhatsApp" style="width:28px;height:28px;margin-right:8px;" />
+                                    <span><strong>WhatsApp:</strong> 963258852</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert alert-info mt-2 mb-0 py-2 small">
+                            <i class="fas fa-info-circle me-1"></i>
+                            <strong>Para Yape y Plin:</strong> Envía un mensaje al WhatsApp 963258852 con tu nombre completo, nombre de tu mascota y DNI. Espera la confirmación antes de agendar tu cita.
+                        </div>
+                        <div class="alert alert-warning mt-2 mb-0 py-2 small">
+                            <i class="fas fa-info-circle me-1"></i>
+                            <strong>💵 Pago en Efectivo:</strong> Debe realizarse presencialmente en la clínica para confirmar su reserva. Si no se encuentra cerca, por favor utilice Yape, Plin o Tarjeta.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const select = document.getElementById("tipoPagoSelect");
+            const extraFields = document.getElementById("extraFields");
+            const btnPagar = document.getElementById("btnPagar");
+
+            function updateFields() {
+                const selected = select.options[select.selectedIndex]?.text?.trim() || "";
+                extraFields.innerHTML = "";
+
+                if (selected === "Tarjeta") {
+                    extraFields.innerHTML = `
+                        <div class="mt-3">
+                            <div class="mb-3">
+                                <label class="form-label"><i class="fas fa-credit-card"></i> Número de tarjeta</label>
+                                <div class="d-flex mb-2" style="column-gap: 20px;">
+                                    <span><i class="fab fa-cc-visa fa-2x" style="color:#1A1F71;"></i></span>
+                                    <span><i class="fab fa-cc-mastercard fa-2x" style="color:#EB001B;"></i></span>
+                                    <span><i class="fab fa-cc-amex fa-2x" style="color:#2E77BC;"></i></span>
+                                </div>
+                                <input type="text" class="form-control" id="cardNumber" maxlength="16" placeholder="1234567890123456" />
+                                <small class="text-danger small" id="cardNumberError"></small>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-7 mb-2 mb-md-0">
+                                    <label class="form-label"><i class="fas fa-calendar-alt"></i> Fecha de caducidad</label>
+                                    <input type="text" class="form-control" id="cardExpiry" placeholder="MM/AA" maxlength="5" />
+                                    <small class="text-danger small" id="cardExpiryError"></small>
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label"><i class="fas fa-lock"></i> CVV</label>
+                                    <input type="text" class="form-control" id="cardCvv" maxlength="4" placeholder="123" />
+                                    <small class="text-danger small" id="cardCvvError"></small>
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label"><i class="fas fa-user"></i> Titular de tarjeta</label>
+                                <input type="text" class="form-control" id="cardHolder" placeholder="Nombre del titular" />
+                                <small class="text-danger small" id="cardHolderError"></small>
+                            </div>
+                        </div>`;
+                }
+            }
+
+            function validarTarjeta() {
+                let valido = true;
+                const num = document.getElementById("cardNumber")?.value?.replace(/\s/g, "") || "";
+                const expiry = document.getElementById("cardExpiry")?.value || "";
+                const cvv = document.getElementById("cardCvv")?.value || "";
+                const holder = document.getElementById("cardHolder")?.value || "";
+
+                document.getElementById("cardNumberError").textContent = "";
+                document.getElementById("cardExpiryError").textContent = "";
+                document.getElementById("cardCvvError").textContent = "";
+                document.getElementById("cardHolderError").textContent = "";
+
+                if (num.length !== 16 || !/^\d+$/.test(num)) {
+                    document.getElementById("cardNumberError").textContent = "Debe tener exactamente 16 dígitos.";
+                    valido = false;
+                }
+                if (!/^\d{2}\/\d{2}$/.test(expiry)) {
+                    document.getElementById("cardExpiryError").textContent = "Formato MM/AA.";
+                    valido = false;
+                } else {
+                    const parts = expiry.split("/");
+                    const mm = parseInt(parts[0], 10);
+                    const yy = parseInt(parts[1], 10) + 2000;
+                    const now = new Date();
+                    if (mm < 1 || mm > 12 || new Date(yy, mm) <= new Date(now.getFullYear(), now.getMonth())) {
+                        document.getElementById("cardExpiryError").textContent = "Tarjeta vencida o fecha inválida.";
+                        valido = false;
+                    }
+                }
+                if (cvv.length < 3 || !/^\d+$/.test(cvv)) {
+                    document.getElementById("cardCvvError").textContent = "CVV inválido (3-4 dígitos).";
+                    valido = false;
+                }
+                if (holder.length < 3) {
+                    document.getElementById("cardHolderError").textContent = "Ingrese el nombre del titular.";
+                    valido = false;
+                }
+                return valido;
+            }
+
+            document.getElementById("cardNumber")?.addEventListener("input", function () {
+                this.value = this.value.replace(/\D/g, "").slice(0, 16);
+            });
+            document.getElementById("cardExpiry")?.addEventListener("input", function () {
+                this.value = this.value.replace(/\D/g, "").replace(/(\d{2})(?=\d)/, "$1/");
+            });
+            document.getElementById("cardCvv")?.addEventListener("input", function () {
+                this.value = this.value.replace(/\D/g, "");
+            });
+
+            select.addEventListener("change", updateFields);
+            updateFields();
+
+            document.getElementById("formPago").addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                const selected = select.options[select.selectedIndex]?.text?.trim() || "";
+                if (!selected) {
+                    Swal.fire({ icon: "warning", title: "Seleccione un método de pago", confirmButtonColor: "#706D60" });
+                    return;
+                }
+
+                const esTarjeta = selected === "Tarjeta";
+                if (esTarjeta && !validarTarjeta()) return;
+
+                btnPagar.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Procesando...';
+                btnPagar.disabled = true;
+
+                const tipoId = select.value;
+
+                const now = new Date();
+                const localIso = now.getFullYear() + '-' +
+                    String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                    String(now.getDate()).padStart(2, '0') + 'T' +
+                    String(now.getHours()).padStart(2, '0') + ':' +
+                    String(now.getMinutes()).padStart(2, '0') + ':' +
+                    String(now.getSeconds()).padStart(2, '0');
+
+                const pagoData = {
+                    IdCliente: @(clienteId ?? 0),
+                    MontoPago: 30.00,
+                    HoraPago: localIso,
+                    TipoPago: parseInt(tipoId),
+                    AutPag: esTarjeta
+                };
+
+                if (esTarjeta) {
+                    Swal.fire({
+                        title: 'Verificando fondos...',
+                        allowOutsideClick: false,
+                        didOpen: function () {
+                            Swal.showLoading();
+                        }
+                    });
+                }
+
+                fetch('/Pago/AgregarPago/' + @(clienteId ?? 0), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(pagoData)
+                })
+                .then(function (r) {
+                    if (!r.ok) return r.text().then(function (t) { throw new Error(t); });
+                    return r.text();
+                })
+                .then(function (idPagoStr) {
+                    var idPago = parseInt(idPagoStr);
+
+                    if (esTarjeta) {
+                        setTimeout(function () {
+                            Swal.fire({
+                                icon: "success",
+                                title: "¡Fondos confirmados!",
+                                confirmButtonColor: "#574C52",
+                                confirmButtonText: '<i class="fas fa-arrow-right me-1"></i> Continuar'
+                            }).then(function () {
+                                window.location.href = '@Url.Action("nuevaCita", "Cita")?PagoId=' + idPago;
+                            });
+                        }, 2000);
+                    } else {
+                        Swal.fire({
+                            icon: "success",
+                            title: "¡Solicitud de pago enviada!",
+                            html: '<div class="text-start">' +
+                                  '<p><i class="fas fa-clock text-warning me-2"></i>Pago pendiente de confirmación.</p>' +
+                                  '<p class="small text-muted"><i class="fas fa-info-circle me-1"></i>El recepcionista confirmará el pago al llegar a la clínica. Luego podrá agendar su cita.</p>' +
+                                  '</div>',
+                            confirmButtonColor: "#574C52",
+                            confirmButtonText: '<i class="fas fa-arrow-right me-1"></i> Continuar'
+                        }).then(function () {
+                            window.location.href = '@Url.Action("nuevaCita", "Cita")?PagoId=' + idPago;
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    Swal.close();
+                    btnPagar.innerHTML = '<i class="fas fa-arrow-right me-1"></i> Continuar';
+                    btnPagar.disabled = false;
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: err.message || "No se pudo procesar el pago.",
+                        confirmButtonColor: "#706D60"
+                    });
+                });
+            });
+        });
+    </script>
+}

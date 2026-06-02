@@ -1,0 +1,109 @@
+﻿@model IEnumerable<VeterinariaWebApp.Models.Usuario.Veterinario.MascotaPorVeterinario>
+@{
+    Layout = null;
+    var count = Model.Count();
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Mascotas Atendidas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; color: #000000; font-size: 14px; max-width: 900px; margin: 0 auto; padding: 30px; }
+        .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #EEB447; padding-bottom: 20px; margin-bottom: 30px; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-left img { height: 50px; width: auto; }
+        .header-left h1 { color: #000000; font-size: 22px; margin: 0; font-weight: bold; }
+        .header-left p { color: #94827F; font-size: 11px; margin: 3px 0 0 0; letter-spacing: 0.5px; }
+        .header-right { text-align: right; color: #94827F; font-size: 12px; }
+        .header-right strong { color: #000000; display: block; margin-bottom: 3px; }
+        .title-section { text-align: center; margin-bottom: 30px; }
+        .title-section h2 { color: #000000; font-size: 24px; margin: 0 0 10px 0; font-weight: bold; letter-spacing: 1px; }
+        .title-section p { color: #94827F; font-size: 13px; }
+        h3 { color: #000000; font-size: 16px; border-bottom: 2px solid #EEB447; padding-bottom: 8px; margin-bottom: 20px; margin-top: 30px; }
+        table.grid { width: 100%; border-collapse: collapse; border: 1px solid #E5E5E5; }
+        table.grid th { background-color: #000000; color: #FFFFFF; padding: 12px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 0.3px; }
+        table.grid td { padding: 10px; border-bottom: 1px solid #E5E5E5; color: #000000; }
+        table.grid tbody tr:nth-child(even) { background-color: #FAFAFA; }
+        table.grid tbody tr:last-child td { border-bottom: none; }
+        .summary { display: inline-block; background: #FAFAFA; border: 1px solid #E5E5E5; border-radius: 6px; padding: 14px 20px; margin-bottom: 20px; }
+        .summary .num { font-size: 24px; font-weight: bold; color: #000000; }
+        .summary .lbl { font-size: 11px; color: #94827F; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+        .record-count { margin-top: 15px; font-size: 12px; color: #94827F; text-align: right; }
+        .footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #E5E5E5; text-align: center; }
+        .footer p { color: #94827F; font-size: 11px; margin: 5px 0; }
+        .footer .brand { color: #000000; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="header-left">
+            <div class="logo-container">
+                <img src="~/img/pataslogo.svg" alt="Mivet Online" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                <i class="fas fa-paw" style="display:none; font-size:40px; color:#94827F;"></i>
+            </div>
+            <div>
+                <h1>Mivet Online</h1>
+                <p>SISTEMA DE GESTIÓN VETERINARIA</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <strong>MASCOTAS ATENDIDAS</strong>
+            <span>Documento generado automáticamente</span><br>
+            <span>@DateTime.Now.ToString("dd/MM/yyyy HH:mm")</span>
+        </div>
+    </div>
+
+    <div class="title-section">
+        <h2>MASCOTAS ATENDIDAS</h2>
+        <p>Total registrados: @count</p>
+    </div>
+
+    <h3>LISTADO DE MASCOTAS ATENDIDAS</h3>
+
+    <div class="summary">
+        <div class="num">@count</div>
+        <div class="lbl">Mascota@(count != 1 ? "s" : "") Atendida@(count != 1 ? "s" : "")</div>
+    </div>
+
+    <table class="grid">
+        <thead>
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.ide_mas)</th>
+                <th>@Html.DisplayNameFor(model => model.Mascota)</th>
+                <th>@Html.DisplayNameFor(model => model.Especie)</th>
+                <th>@Html.DisplayNameFor(model => model.Raza)</th>
+                <th>@Html.DisplayNameFor(model => model.Doc_Dueño)</th>
+                <th>@Html.DisplayNameFor(model => model.Total_Citas)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.ide_mas)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Mascota)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Especie)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Raza)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Doc_Dueño)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Total_Citas)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="record-count">
+        Mostrando @count mascota@(count != 1 ? "s" : "") atendida@(count != 1 ? "s" : "")
+    </div>
+
+    <div class="footer">
+        <p><strong class="brand">Mivet Online</strong> — Sistema de Gestión Veterinaria</p>
+        <p>Documento generado automáticamente • No requiere firma</p>
+    </div>
+
+</body>
+</html>

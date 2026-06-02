@@ -1,0 +1,293 @@
+@model IEnumerable<VeterinariaWebApp.Models.Usuario.Cliente.CitaCliente>
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+
+@{
+    ViewData["Title"] = "Mis Citas";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+    var clienteId = Context.Session.GetInt32("ClienteId");
+    var antiforgeryToken = Xsrf.GetAndStoreTokens(Context).RequestToken;
+}
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-calendar-check text-primary me-2"></i> Mis Citas
+        </h1>
+        <div class="d-flex gap-2">
+                    <a asp-controller="Cita" asp-action="IniciarCreacionCita" class="btn btn-create-gradient" id="btnAgendarCita">
+                                <i class="fas fa-plus-circle me-1"></i> Agendar Nueva Cita
+                            </a>
+        </div>
+    </div>
+
+        <!-- Vista de tabla alternativa -->
+        <div class="card shadow mb-4 mt-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-table me-2"></i>Vista de Tabla
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha y Hora</th>
+                                <th>Consultorio</th>
+                                <th>Veterinario</th>
+                                <th>Mascota</th>
+                                <th>Monto</th>
+                                <th>Estado</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OrderByDescending(c => c.cal_cit))
+                            {
+                                <tr>
+                                    <td><span class="badge bg-secondary">#@item.ide_cit</span></td>
+                                    <td>
+                                        <strong>@item.cal_cit.ToString("dd/MM/yyyy")</strong><br>
+                                        <small class="text-muted">@item.cal_cit.ToString("hh:mm tt")</small>
+                                    </td>
+                                    <td>@item.con_cit</td>
+                                    <td>
+                                        Dr. @item.veterinario<br>
+                                        <small class="text-muted">@item.especialidad</small>
+                                    </td>
+                                    <td>
+                                        @item.mascota<br>
+                                        <small class="text-muted">@item.especie</small>
+                                    </td>
+                                    <td><span class="badge bg-success">S/ @item.mon_pag.ToString("N2")</span></td>
+                                    <td>
+                                        <span class="badge bg-@item.EstadoColor @(item.est_cit == "P" ? "text-dark" : "")">
+                                            <i class="fas @item.EstadoIcono me-1"></i>@item.EstadoDescripcion
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="@Url.Action("DetalleCita", "Cita", new { id = item.ide_cit })"
+                                           class="btn btn-info btn-sm" title="Ver">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        @if (item.est_cit == "A" && item.TieneHistorial)
+                                        {
+                                            <a href="@Url.Action("GenerarHistorialCitaPDF", "Cita", new { id = item.ide_cit })"
+                                               class="btn btn-danger btn-sm" title="Historial Médico PDF">
+                                                <i class="fas fa-file-medical"></i>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a href="@Url.Action("GenerarDetalleCitaPDF", "Cita", new { id = item.ide_cit })"
+                                               class="btn btn-danger btn-sm" title="PDF">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </a>
+                                        }
+                                        @if (item.est_cit == "P" && item.cal_cit > DateTime.Now.AddHours(12))
+                                        {
+                                            <a href="@Url.Action("EditarCitaCliente", "Cita", new { id = item.ide_cit })"
+                                               class="btn btn-warning btn-sm" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-danger btn-sm btn-cancelar-cita"
+                                                    data-id="@item.ide_cit" data-fecha="@item.cal_cit.ToString("dd/MM/yyyy HH:mm")"
+                                                    data-mascota="@item.mascota" title="Cancelar">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Auto-cerrar alertas
+            setTimeout(function () {
+                var alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function (alert) {
+                    if (bootstrap && bootstrap.Alert) {
+                        var bsAlert = new bootstrap.Alert(alert);
+                        bsAlert.close();
+                    }
+                });
+            }, 5000);
+
+            // Verificar si hay pagos pendientes del cliente logueado para cambiar texto del botón
+            fetch('/Pago/ListarPagosPorClienteProxy/@clienteId')
+                .then(r => r.json())
+                .then(pagos => {
+                    if (pagos && pagos.some(p => p.estadoPago === "Pendiente")) {
+                        const btn = document.getElementById('btnAgendarCita');
+                        if (btn) {
+                            btn.innerHTML = '<i class="fas fa-arrow-right me-1"></i> Completar agendamiento';
+                        }
+                    }
+                })
+                .catch(() => {});
+
+            // Manejar cancelación de cita
+            const botonesCancelar = document.querySelectorAll('.btn-cancelar-cita');
+            botonesCancelar.forEach(boton => {
+                boton.addEventListener('click', function () {
+                    const idCita = this.getAttribute('data-id');
+                    const fechaCita = this.getAttribute('data-fecha');
+                    const mascotaCita = this.getAttribute('data-mascota');
+
+                    Swal.fire({
+                        title: '¿Cancelar cita?',
+                        html: `
+                            <div class="text-start">
+                                <p>¿Estás seguro de que deseas cancelar esta cita?</p>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-calendar me-2 text-primary"></i><strong>Fecha:</strong> ${fechaCita}</li>
+                                    <li><i class="fas fa-paw me-2 text-primary"></i><strong>Mascota:</strong> ${mascotaCita}</li>
+                                </ul>
+                                <small class="text-danger"><i class="fas fa-exclamation-triangle me-1"></i>Esta acción no se puede deshacer.</small>
+                            </div>
+                        `,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#dc3545',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: '<i class="fas fa-times me-1"></i> Sí, cancelar cita',
+                        cancelButtonText: '<i class="fas fa-arrow-left me-1"></i> No, mantener',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Cambiar estado a Cancelada en lugar de eliminar
+                            fetch(`/Cita/CancelarCitaCliente?id=${idCita}`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'RequestVerificationToken': '@antiforgeryToken'
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: '¡Cita cancelada!',
+                                        text: 'La cita ha sido cancelada correctamente.',
+                                        confirmButtonColor: '#28a745'
+                                    }).then(() => location.reload());
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: data.message || 'No se pudo cancelar la cita.',
+                                        confirmButtonColor: '#28a745'
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Hubo un problema al cancelar la cita.',
+                                    confirmButtonColor: '#28a745'
+                                });
+                            });
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+}
+
+<style>
+    .cita-card {
+        border-radius: 15px;
+        transition: all 0.3s ease;
+        border-width: 2px !important;
+    }
+
+        .cita-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .cita-card .card-header {
+            border-radius: 13px 13px 0 0 !important;
+            border-bottom: none;
+        }
+
+    .bg-success-light {
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    }
+
+    .bg-warning-light {
+        background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+    }
+
+    .bg-info-light {
+        background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+    }
+
+    .bg-danger-light {
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    }
+
+    .bg-secondary-light {
+        background: linear-gradient(135deg, #e2e3e5 0%, #d6d8db 100%);
+    }
+
+    .cita-info .info-item {
+        padding: 8px 0;
+        border-bottom: 1px dashed #e9ecef;
+    }
+
+        .cita-info .info-item:last-child {
+            border-bottom: none;
+        }
+
+    .border-left-primary {
+        border-left: 4px solid #4e73df !important;
+    }
+
+    .border-left-success {
+        border-left: 4px solid #28a745 !important;
+    }
+
+    .border-left-warning {
+        border-left: 4px solid #ffc107 !important;
+    }
+
+    .border-left-info {
+        border-left: 4px solid #17a2b8 !important;
+    }
+
+    .border-left-danger {
+        border-left: 4px solid #dc3545 !important;
+    }
+
+    .empty-state i {
+        opacity: 0.3;
+    }
+
+    .btn-group .btn {
+        border-radius: 0;
+    }
+
+        .btn-group .btn:first-child {
+            border-radius: 5px 0 0 5px;
+        }
+
+        .btn-group .btn:last-child {
+            border-radius: 0 5px 5px 0;
+        }
+
+</style>

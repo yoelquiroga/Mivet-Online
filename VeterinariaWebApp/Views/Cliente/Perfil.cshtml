@@ -1,0 +1,201 @@
+@model VeterinariaWebApp.Models.Usuario.Cliente.PerfilClienteViewModel
+
+@{
+    ViewData["Title"] = "Mi Perfil";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_green.css">
+
+<div class="container-fluid">
+
+    <div class="mb-3">
+        <a asp-action="Index" class="edit-back-link">
+            <i class="fas fa-arrow-left"></i> Volver al Dashboard
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Tarjeta de información -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-gradient-primary">
+                    <h6 class="m-0 font-weight-bold text-white">
+                        <i class="fas fa-id-card me-2"></i>Información de Cuenta
+                    </h6>
+                </div>
+                <div class="card-body text-center">
+                    <div class="profile-avatar mb-3">
+                        <i class="fas fa-user-circle fa-6x text-primary"></i>
+                    </div>
+                    <h5 class="font-weight-bold text-gray-800">@Model.nom_usr @Model.ape_usr</h5>
+                    <p class="text-muted mb-2">
+                        <i class="fas fa-envelope me-1"></i>@Model.cor_usr
+                    </p>
+                    <span class="badge bg-success px-3 py-2">
+                        <i class="fas fa-paw me-1"></i>Cliente MiVet
+                    </span>
+
+                    <hr class="my-4">
+
+                    <div class="text-start">
+                        <p class="mb-2">
+                            <strong><i class="fas fa-id-badge me-2 text-primary"></i>Documento:</strong><br>
+                            <span class="ms-4">@Model.nom_doc - @Model.num_doc</span>
+                        </p>
+                        <p class="mb-0">
+                            <strong><i class="fas fa-birthday-cake me-2 text-primary"></i>Fecha de Nacimiento:</strong><br>
+                            <span class="ms-4">@Model.fna_usr.ToString("dd 'de' MMMM 'de' yyyy")</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-info-circle me-2"></i>Información
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-2">
+                        <i class="fas fa-lock me-1"></i> El correo y la contraseña no pueden ser modificados desde aquí.
+                    </p>
+                    <p class="text-muted small mb-0">
+                        <i class="fas fa-shield-alt me-1"></i> Tus datos están protegidos y seguros.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de edición -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="edit-form-card">
+                <div class="card-header edit-header-gradient py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="icon-circle-edit">
+                            <i class="fas fa-user fa-lg"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0 fw-bold">Editando: @Model.nom_usr @Model.ape_usr</h5>
+                            <small>Modifique sus datos personales</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="edit-form-body">
+                    <form asp-action="Perfil" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="edit-form-grid">
+                            <div class="form-field-card full-width">
+                                <label class="form-label">
+                                    <i class="fas fa-envelope"></i> Correo electrónico
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                    <input type="text" class="form-control" value="@Model.cor_usr" readonly disabled>
+                                </div>
+                                <small class="text-muted d-block mt-1">El correo no puede ser modificado</small>
+                            </div>
+
+                            <div class="form-field-card">
+                                <label asp-for="nom_usr" class="form-label">
+                                    <i class="fas fa-user"></i> Nombres
+                                </label>
+                                <input asp-for="nom_usr" class="form-control" placeholder="Ingrese sus nombres" />
+                                <span asp-validation-for="nom_usr" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-field-card">
+                                <label asp-for="ape_usr" class="form-label">
+                                    <i class="fas fa-user"></i> Apellidos
+                                </label>
+                                <input asp-for="ape_usr" class="form-control" placeholder="Ingrese sus apellidos" />
+                                <span asp-validation-for="ape_usr" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-field-card">
+                                <label asp-for="ide_doc" class="form-label">
+                                    <i class="fas fa-id-card"></i> Tipo de Documento
+                                </label>
+                                <select asp-for="ide_doc" asp-items="@ViewBag.TiposDocumento" class="form-select">
+                                    <option value="">Seleccione...</option>
+                                </select>
+                                <span asp-validation-for="ide_doc" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-field-card">
+                                <label asp-for="num_doc" class="form-label">
+                                    <i class="fas fa-hashtag"></i> Número de Documento
+                                </label>
+                                <input asp-for="num_doc" class="form-control" placeholder="Ingrese su documento" maxlength="12" />
+                                <span asp-validation-for="num_doc" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-field-card full-width">
+                                <label asp-for="fna_usr" class="form-label">
+                                    <i class="fas fa-calendar-alt"></i> Fecha de Nacimiento
+                                </label>
+                                <input asp-for="fna_usr" type="text" class="form-control datepicker"
+                                       id="fna_usr" placeholder="Seleccione su fecha de nacimiento" readonly />
+                                <span asp-validation-for="fna_usr" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="edit-form-footer">
+                            <a asp-action="Index" class="btn-cancel-edit">
+                                <i class="fas fa-times me-1"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn-save-gradient">
+                                <i class="fas fa-save me-1"></i> Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const hoy = new Date();
+            const fechaMaxima = new Date(hoy.getFullYear() - 18, hoy.getMonth(), hoy.getDate());
+            const fechaActual = '@Model.fna_usr.ToString("yyyy-MM-dd")';
+
+            flatpickr("#fna_usr", {
+                locale: "es",
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "d \\de F \\de Y",
+                minDate: "1900-01-01",
+                maxDate: fechaMaxima,
+                defaultDate: fechaActual,
+                disableMobile: false,
+                monthSelectorType: "dropdown",
+                animate: true
+            });
+
+            document.getElementById('num_doc').addEventListener('input', function (e) {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+
+            setTimeout(function () {
+                var alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function (alert) {
+                    var bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                });
+            }, 5000);
+        });
+    </script>
+}

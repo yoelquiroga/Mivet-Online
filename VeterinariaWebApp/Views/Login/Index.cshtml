@@ -1,0 +1,322 @@
+﻿@{
+    ViewData["Title"] = "Iniciar Sesión - MiVet Online";
+    Layout = "~/Views/Shared/_LayoutHome.cshtml";
+}
+
+<div class="wizard-container">
+
+    <!-- Decorative icons -->
+    <div class="deco-icon" style="top:8%;left:3%;width:55px;opacity:0.10;transform:rotate(-20deg);">
+        <img src="~/img/icons/patas.svg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:55px;">🐾</span>
+    </div>
+    <div class="deco-icon" style="top:5%;right:8%;width:40px;opacity:0.12;transform:rotate(25deg);">
+        <img src="~/img/icons/hueso.svg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:40px;">🦴</span>
+    </div>
+    <div class="deco-icon" style="top:35%;left:1%;width:42px;opacity:0.14;transform:rotate(35deg);">
+        <img src="~/img/icons/hueso.svg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:42px;">🦴</span>
+    </div>
+    <div class="deco-icon" style="top:30%;right:2%;width:50px;opacity:0.10;transform:rotate(-15deg);">
+        <img src="~/img/icons/patas.svg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:50px;">🐾</span>
+    </div>
+    <div class="deco-icon" style="top:55%;left:6%;width:48px;opacity:0.11;transform:rotate(-30deg);">
+        <img src="~/img/icons/patas.svg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:48px;">🐾</span>
+    </div>
+    <div class="deco-icon" style="top:60%;right:5%;width:38px;opacity:0.13;transform:rotate(15deg);">
+        <img src="~/img/icons/hueso.svg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:38px;">🦴</span>
+    </div>
+    <div class="deco-icon" style="top:78%;left:2%;width:44px;opacity:0.12;transform:rotate(40deg);">
+        <img src="~/img/icons/hueso.svg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:44px;">🦴</span>
+    </div>
+    <div class="deco-icon" style="top:82%;right:3%;width:52px;opacity:0.09;transform:rotate(-25deg);">
+        <img src="~/img/icons/patas.svg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:52px;">🐾</span>
+    </div>
+    <div class="deco-icon" style="bottom:5%;left:10%;width:35px;opacity:0.15;transform:rotate(-10deg);">
+        <img src="~/img/icons/hueso.svg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:35px;">🦴</span>
+    </div>
+    <div class="deco-icon" style="bottom:8%;right:10%;width:45px;opacity:0.10;transform:rotate(20deg);">
+        <img src="~/img/icons/patas.svg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span style="display:none;font-size:45px;">🐾</span>
+    </div>
+
+    <!-- PANEL IZQUIERDO -->
+    <aside class="wizard-sidebar">
+        <div class="brand">
+            <img src="~/img/icons/logohome.png" alt="MiVet Online" class="brand-logo-img" />
+        </div>
+
+        <!-- LOGIN -->
+        <ul class="steps">
+            <li class="active"><span></span> Credenciales</li>
+            <li><span></span> Verificación</li>
+            <li><span></span> Acceso</li>
+        </ul>
+
+        <div class="sidebar-image"></div>
+    </aside>
+
+    <!-- PANEL DERECHO -->
+    <main class="wizard-content">
+
+        <h2 class="title">¡Bienvenido de nuevo!</h2>
+        <p class="subtitle">Ingresa a tu cuenta de MiVet Online</p>
+
+        @if (ViewBag.Mensaje != null)
+        {
+            <div class="alert alert-danger text-center d-none" id="loginError">
+                @ViewBag.Mensaje
+            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({ icon: 'error', title: 'Error de inicio de sesión', text: @Json.Serialize(ViewBag.Mensaje ?? ""), toast: true, position: 'top-end', showConfirmButton: false, timer: 5000, timerProgressBar: true });
+                });
+            </script>
+        }
+
+        <form asp-controller="Login" asp-action="Index" method="post">
+
+            <div class="mb-3">
+                <label>Correo electrónico</label>
+                <input type="email"
+                       name="uid"
+                       class="form-control"
+                       placeholder="correo@ejemplo.com"
+                       required />
+            </div>
+
+            <div class="mb-4">
+                <label>Contraseña</label>
+                <input type="password"
+                       name="pwd"
+                       class="form-control"
+                       placeholder="********"
+                       required />
+            </div>
+
+            <div class="actions">
+                <div class="login-link">
+                    <span>¿No tienes cuenta?</span>
+                    <a asp-action="Registro" class="link-registro">Regístrate aquí</a>
+                </div>
+
+                <button type="submit" class="btn-next">
+                    Ingresar
+                    <i class="fas fa-arrow-right ms-2"></i>
+                </button>
+            </div>
+
+        </form>
+    </main>
+</div>
+<style>
+    body {
+        background: #FDFDFD;
+        font-family: 'Segoe UI', sans-serif;
+        margin: 0;
+    }
+    body > main {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 100px 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        box-sizing: border-box;
+        position: relative;
+    }
+
+    /* CONTENEDOR PRINCIPAL */
+    .wizard-container {
+        max-width: 1100px;
+        width: 100%;
+        height: 650px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 35% 65%;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 15px 40px rgba(0,0,0,.25);
+    }
+
+    /* PANEL IZQUIERDO */
+    .wizard-sidebar {
+        background: #5f6478;
+        color: #fff;
+        padding: 30px 25px;
+        position: relative;
+    }
+
+    .brand-logo-img {
+        width: 170px;
+        height: auto;
+        filter: brightness(0) invert(1);
+    }
+
+    /* STEPS */
+    .steps {
+        list-style: none;
+        padding: 0;
+        margin-top: 40px;
+    }
+
+        .steps li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+            opacity: .6;
+        }
+
+            .steps li span {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background: #cbd5e1;
+            }
+
+            .steps li.active {
+                opacity: 1;
+                font-weight: 600;
+            }
+
+                .steps li.active span {
+                    background: #fff;
+                }
+
+    /* IMAGEN */
+    .sidebar-image {
+        position: absolute;
+        bottom: -50px;
+        left: 0;
+        width: 100%;
+        height: 60%;
+        background: url('/img/perro2.png') center / cover no-repeat;
+        opacity: 0.9;
+    }
+
+    /* PANEL DERECHO */
+    .wizard-content {
+        background: #fdeeee;
+        padding: 40px 60px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .title {
+        font-weight: 700;
+    }
+
+    .subtitle {
+        color: #6b7280;
+        margin-bottom: 30px;
+    }
+
+    /* INPUTS */
+    .form-control {
+        border-radius: 10px;
+        padding: 10px 14px;
+    }
+
+    /* ACCIONES */
+    .actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 25px;
+    }
+
+    .login-link {
+        font-size: 0.9rem;
+        color: #6b7280;
+    }
+
+    .link-registro {
+        color: #5f6478;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+        .link-registro:hover {
+            text-decoration: underline;
+        }
+
+    /* BOTÓN */
+    .btn-next {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 20px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #5f6478, #374151);
+        color: #fff;
+        font-weight: 600;
+        font-size: 0.95rem;
+        letter-spacing: 0.3px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.35s ease;
+        box-shadow: 0 10px 22px rgba(0, 0, 0, 0.25);
+    }
+
+        /* Hover elegante */
+        .btn-next:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+        }
+
+        /* Click */
+        .btn-next:active {
+            transform: translateY(0) scale(0.98);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Icono */
+        .btn-next i {
+            font-size: 0.85rem;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-next:hover i {
+            transform: translateX(4px);
+        }
+
+
+    /* RESPONSIVE */
+    @@media (max-width: 576px) {
+        .wizard-container
+
+    {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .sidebar-image {
+        height: 220px;
+        position: relative;
+    }
+
+    .actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .btn-next {
+        justify-content: center;
+        width: 100%;
+    }
+
+    }
+</style>
