@@ -6,7 +6,7 @@
 
 ## 📋 Descripción
 
-Sistema de gestión veterinaria integral con arquitectura de proxy seguro (MVC → API → DB) que digitaliza la operación de una clínica: agendamiento en tiempo real, pagos, historial clínico y notificaciones transaccionales, todo sobre roles diferenciados con paneles personalizados.
+Sistema de gestión veterinaria online desarrollado para clínicas que aún operan con papel y llamadas, donde las dobles reservas y la falta de trazabilidad clínica eran el problema del día a día. El reto era garantizar reservas atómicas sin colisiones entre usuarios simultáneos, integridad pago-cita y un backend no expuesto al navegador. Se implementó una arquitectura de proxy seguro (MVC → API → DB) con transacciones serializables y bloqueos pesimistas en SQL Server, unique filtered indexes contra doble reserva, hold temporal de 4 min, rate limiting y autenticación por roles con BCrypt. El resultado: cero colisiones de agenda, trazabilidad clínica completa por atención, backend invisible para el cliente final y paneles adaptados a cada rol sobre .NET 8.
 
 ## ✨ Funcionalidades
 
